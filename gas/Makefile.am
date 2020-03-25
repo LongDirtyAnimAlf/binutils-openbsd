@@ -480,7 +480,7 @@ DEP_FLAGS = -DOBJ_MAYBE_ELF \
 # How to link with both our special library facilities
 # and the system's installed libraries.
 
-GASLIBS = @OPCODES_LIB@ @BFDLIB@ -liberty
+GASLIBS = @OPCODES_LIB@ @BFDLIB@ ../libiberty/libiberty.a
 GASLIBSDEP = @OPCODES_LIB@ @BFDLIB@
 
 # Files to be copied away after each stage in building.

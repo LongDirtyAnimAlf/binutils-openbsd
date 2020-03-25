@@ -113,7 +113,8 @@ BFDLIB = ../bfd/libbfd.la
 
 OPCODES = ../opcodes/libopcodes.la
 
-LIBIBERTY = -liberty
+# LIBIBERTY = -liberty
+LIBIBERTY = ../libiberty/libiberty.a
 
 .PHONY: install-html install-html-am install-html-recursive
 

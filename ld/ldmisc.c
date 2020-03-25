@@ -432,6 +432,12 @@ vfinfo (FILE *fp, const char *fmt, va_list arg, bfd_boolean is_warning)
     xexit (1);
 }
 
+char *
+strsep (char **source_ptr,const char *delim)
+{
+    return strtok_r (*source_ptr, delim, source_ptr);
+}
+
 /* Wrapper around cplus_demangle.  Strips leading underscores and
    other such chars that would otherwise confuse the demangler.  */
 

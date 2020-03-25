@@ -1050,9 +1050,6 @@ main (int argc, char ** argv)
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  if (pledge ("stdio rpath wpath cpath fattr", NULL) == -1)
-    as_bad (_("Failed to pledge"));
-
   if (debug_memory)
     chunksize = 64;
 

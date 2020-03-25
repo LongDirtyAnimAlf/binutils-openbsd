@@ -40,6 +40,8 @@ do { info_assert(__FILE__,__LINE__); } while (0)
 
 extern void print_space (void);
 extern void print_nl (void);
+
+extern char *strsep (char **,const char *);
 extern char *demangle (const char *);
 
 #endif
