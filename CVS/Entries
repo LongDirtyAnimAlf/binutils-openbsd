@@ -1,0 +1,42 @@
+D/bfd////
+D/binutils////
+D/config////
+D/cpu////
+D/etc////
+D/gas////
+D/gprof////
+D/include////
+D/intl////
+D/ld////
+D/opcodes////
+D/texinfo////
+/COPYING/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/COPYING.LIB/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/Makefile.bsd-wrapper/1.18/Fri May 17 14:47:03 2019//TOPENBSD_6_6
+/Makefile.def/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/Makefile.in/1.2/Mon Jul  4 23:58:26 2011//TOPENBSD_6_6
+/Makefile.tpl/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/README/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/config-ml.in/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/config.guess/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/config.sub/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/configure/1.4/Mon May 25 12:42:54 2015//TOPENBSD_6_6
+/configure.in/1.4/Mon May 25 12:42:54 2015//TOPENBSD_6_6
+/gettext.m4/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/install-sh/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/libtool.m4/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/ltcf-c.sh/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/ltcf-cxx.sh/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/ltcf-gcj.sh/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/ltconfig/1.2/Fri Sep 16 20:16:50 2016//TOPENBSD_6_6
+/ltmain.sh/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/makefile.vms/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/md5.sum/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/missing/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/mkdep/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/mkinstalldirs/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/move-if-change/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/setup.com/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/src-release/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/symlink-tree/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
+/ylwrap/1.1.1.1/Sun Apr 24 20:14:40 2011//TOPENBSD_6_6
