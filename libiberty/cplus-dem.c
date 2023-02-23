@@ -49,6 +49,9 @@ Boston, MA 02110-1301, USA.  */
 #include <string.h>
 #include <stdio.h>
 
+#include "strlcat.h"
+#include "strlcpy.h"
+
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #else
@@ -994,9 +997,9 @@ ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
 	     sizeof (char));
 
   if (mangled[0] == '<')
-     strcpy (demangled, mangled);
+    strlcpy (demangled, mangled, demangled_size);
   else
-    sprintf (demangled, "<%s>", mangled);
+    snprintf (demangled, demangled_size, "<%s>", mangled);
 
   return demangled;
 }
@@ -1753,7 +1756,7 @@ demangle_integral_value (struct work_stuff *work,
       if (value != -1)
 	{
 	  char buf[INTBUF_SIZE];
-	  sprintf (buf, "%d", value);
+	  snprintf (buf, sizeof buf, "%d", value);
 	  string_append (s, buf);
 
 	  /* Numbers not otherwise delimited, might have an underscore
@@ -2944,7 +2947,7 @@ gnu_special (struct work_stuff *work, const char **mangled, string *declp)
 	  if (method)
 	    {
 	      char buf[50];
-	      sprintf (buf, "virtual function thunk (delta:%d) for ", -delta);
+	      snprintf (buf, sizeof buf, "virtual function thunk (delta:%d) for ", -delta);
 	      string_append (declp, buf);
 	      string_append (declp, method);
 	      free (method);
@@ -3835,7 +3838,7 @@ demangle_fund_type (struct work_stuff *work,
 	  *mangled += min (strlen (*mangled), 2);
 	}
       sscanf (buf, "%x", &dec);
-      sprintf (buf, "int%u_t", dec);
+      snprintf (buf, sizeof buf, "int%u_t", dec);
       APPEND_BLANK (result);
       string_append (result, buf);
       break;
@@ -4712,6 +4715,6 @@ static void
 string_append_template_idx (string *s, int idx)
 {
   char buf[INTBUF_SIZE + 1 /* 'T' */];
-  sprintf(buf, "T%d", idx);
+  snprintf(buf, sizeof buf, "T%d", idx);
   string_append (s, buf);
 }

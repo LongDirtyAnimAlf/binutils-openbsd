@@ -142,8 +142,9 @@ libgcj="target-libffi \
 # these libraries are built for the target environment, and are built after
 # the host libraries and the host tools (which may be a cross compiler)
 #
-target_libraries="target-libiberty \
-		target-libgloss \
+# Note that libiberty is not a target library.
+# target_libraries="target-libiberty \
+target_libraries="target-libgloss \
 		target-newlib \
 		target-libstdc++-v3 \
 		target-libmudflap \
