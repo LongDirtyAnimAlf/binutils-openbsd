@@ -59,7 +59,7 @@ bin_PROGRAMS = $(OBJDUMP_PROG) $(AR_PROG) $(STRINGS_PROG) $(RANLIB_PROG) $(OBJCO
 
 ## We need a special rule to install the programs which are built with
 ## -new, and to rename cxxfilt to c++filt.
-noinst_PROGRAMS = $(STRIP_PROG)
+noinst_PROGRAMS = $(STRIP_PROG) $(DEMANGLER_PROG)
 
 EXTRA_PROGRAMS = $(NLMCONV_PROG) srconv sysdump coffdump $(DLLTOOL_PROG) $(WINDRES_PROG) $(DLLWRAP_PROG)
 
@@ -113,8 +113,7 @@ BFDLIB = ../bfd/libbfd.la
 
 OPCODES = ../opcodes/libopcodes.la
 
-# LIBIBERTY = -liberty
-LIBIBERTY = ../libiberty/libiberty.a
+LIBIBERTY = -liberty
 
 .PHONY: install-html install-html-am install-html-recursive
 
@@ -204,7 +203,7 @@ objdump_LDADD = $(OPCODES) $(BFDLIB) $(LIBIBERTY) $(INTLLIBS)
 objdump.o:objdump.c
 	$(COMPILE) -c $(OBJDUMP_DEFS) $(srcdir)/objdump.c
 
-#cxxfilt_SOURCES = cxxfilt.c $(BULIBS)
+cxxfilt_SOURCES = cxxfilt.c $(BULIBS)
 
 ar_SOURCES = arparse.y arlex.l ar.c not-ranlib.c arsup.c rename.c binemul.c \
 	emul_$(EMULATION).c $(BULIBS)

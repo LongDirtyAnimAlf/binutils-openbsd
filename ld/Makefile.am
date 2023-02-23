@@ -97,13 +97,13 @@ info_TEXINFOS = ld.texinfo
 noinst_TEXINFOS = ldint.texinfo
 man_MANS = ld.1
 
-AM_MAKEINFOFLAGS = -I $(srcdir) -I $(BFDDIR)/doc -I $(top_srcdir)/../libiberty
-TEXI2DVI = texi2dvi -I $(srcdir) -I $(BFDDIR)/doc -I $(top_srcdir)/../libiberty
+AM_MAKEINFOFLAGS = -I $(srcdir) -I $(BFDDIR)/doc -I $(top_srcdir)/../../../lib/libiberty/src
+TEXI2DVI = texi2dvi -I $(srcdir) -I $(BFDDIR)/doc -I $(top_srcdir)/../../../lib/libiberty/src
 
 INCLUDES = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(BFDDIR) -I$(INCDIR) -I$(top_srcdir)/../intl -I../intl $(HDEFINES) $(CFLAGS) -DLOCALEDIR="\"$(datadir)/locale\""
 
 BFDLIB = ../bfd/libbfd.la
-LIBIBERTY = ../libiberty/libiberty.a
+LIBIBERTY = =liberty
 
 ALL_EMULATIONS = \
 	eaixppc.o \
@@ -1709,7 +1709,7 @@ EXTRA_ld_new_SOURCES = deffilep.y
 
 ld_new_SOURCES = ldgram.y ldlex.l lexsup.c ldlang.c mri.c ldctor.c ldmain.c \
 	ldwrite.c ldexp.c ldemul.c ldver.c ldmisc.c ldfile.c ldcref.c
-ld_new_DEPENDENCIES = $(EMULATION_OFILES) $(EMUL_EXTRA_OFILES) $(BFDLIB) $(LIBIBERTY) $(INTLDEPS)
+ld_new_DEPENDENCIES = $(EMULATION_OFILES) $(EMUL_EXTRA_OFILES) $(BFDLIB) $(INTLDEPS)
 ld_new_LDADD = $(EMULATION_OFILES) $(EMUL_EXTRA_OFILES) $(BFDLIB) $(LIBIBERTY) $(INTLLIBS)
 
 # The generated emulation files mostly have the same dependencies.
@@ -1885,7 +1885,7 @@ install-exec-local: ld-new$(EXEEXT)
 	$(mkinstalldirs) $(DESTDIR)$(bindir) $(DESTDIR)$(tooldir)/bin
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(bindir)/`echo $$p|sed -e 's/$(EXEEXT)$$//' -e 's/-new//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed -e 's/$(EXEEXT)$$//' -e 's/-new//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
 	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed -e 's/$(EXEEXT)$$//' -e 's/-new//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	  else :; fi; \
 	done
@@ -1950,17 +1950,17 @@ dep.sed: dep-in.sed config.status
 dep: DEP
 	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
 	cat DEP >> tmp-Makefile
-	$(srcdir)/../move-if-change tmp-Makefile Makefile
+	$(SHELL) $(srcdir)/../move-if-change tmp-Makefile Makefile
 
 dep-in: DEP
 	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
 	cat DEP >> tmp-Makefile.in
-	$(srcdir)/../move-if-change tmp-Makefile.in $(srcdir)/Makefile.in
+	$(SHELL) $(srcdir)/../move-if-change tmp-Makefile.in $(srcdir)/Makefile.in
 
 dep-am: DEP
 	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
 	cat DEP >> tmp-Makefile.am
-	$(srcdir)/../move-if-change tmp-Makefile.am $(srcdir)/Makefile.am
+	$(SHELL) $(srcdir)/../move-if-change tmp-Makefile.am $(srcdir)/Makefile.am
 
 .PHONY: dep dep-in dep-am
 

@@ -22,6 +22,9 @@
 #ifndef LDMISC_H
 #define LDMISC_H
 
+#include <string.h>
+char *strsep(char **stringp, const char *delim);
+
 extern void einfo (const char *, ...);
 extern void minfo (const char *, ...);
 extern void info_msg (const char *, ...);
@@ -40,8 +43,6 @@ do { info_assert(__FILE__,__LINE__); } while (0)
 
 extern void print_space (void);
 extern void print_nl (void);
-
-extern char *strsep (char **,const char *);
 extern char *demangle (const char *);
 
 #endif

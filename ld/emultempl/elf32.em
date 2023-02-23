@@ -1541,7 +1541,7 @@ cat >>e${EMULATION_NAME}.c <<EOF
 
 static bfd_boolean
 gld${EMULATION_NAME}_open_dynamic_archive
-  (const char *arch, search_dirs_type *search,
+  (const char *arch __attribute__ ((__unused__)), search_dirs_type *search,
   lang_input_statement_type *entry)
 {
   const char *filename;

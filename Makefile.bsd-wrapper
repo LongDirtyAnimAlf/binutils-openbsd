@@ -32,10 +32,11 @@ INST_SUBDIRS+=	binutils
 MAN+=		binutils/doc/ar.1 binutils/doc/ranlib.1 \
 		binutils/doc/strings.1 binutils/doc/strip.1
 
-.if ${TARGET_ARCH} != "aarch64"
-SUBDIRS+=	ld gas
-CONF_SUBDIRS+=	ld gas
-INST_SUBDIRS+=	ld gas
+.if (${TARGET_ARCH} != "aarch64" && ${TARGET_ARCH} != "powerpc64" && \
+    ${TARGET_ARCH} != "riscv64")
+SUBDIRS+=	 ld gas
+CONF_SUBDIRS+=	 ld gas
+INST_SUBDIRS+=	 ld gas
 MAN+=		gas/doc/as.1	ld/ld.bfd.1
 .if ${LINKER_VERSION:L} == "bfd"
 maninstall:
@@ -58,7 +59,8 @@ CONFIGTARGET=--target=${TARGET_ARCH}-unknown-openbsd${OSREV}
 CONFIGTARGET=
 .endif
 
-.if ${TARGET_ARCH} == "aarch64"
+.if ${TARGET_ARCH} == "aarch64" || ${TARGET_ARCH} == "powerpc64" || \
+    ${TARGET_ARCH} == "riscv64"
 CONFIGTARGET+=--without-gnu-ld
 CONFIGTARGET+=--without-gnu-as
 .endif
@@ -91,6 +93,7 @@ do-config: .USE
 	sh ${.CURDIR}/configure --prefix=${PREFIX} \
 	    --infodir='$${prefix}/share/info' \
 	    --disable-nls --disable-gdbtk --disable-install-libbfd ${CF} \
+	    --disable-werror \
 	    ${CONFIGTARGET}
 	cd ${.OBJDIR} && \
 	    sed -e 's,SUBDIRS *=,SUBDIRS ?=,' <Makefile >Makefile.tmp && \

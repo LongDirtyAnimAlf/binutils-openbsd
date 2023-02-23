@@ -341,6 +341,11 @@ main (int argc, char **argv)
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
+#if defined (HAVE_PLEDGE)
+  if (pledge ("stdio rpath", NULL) == -1)
+    fatal (_("Failed to pledge"));
+#endif
+
   program_name = *argv;
   xmalloc_set_program_name (program_name);
 

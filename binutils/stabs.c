@@ -2670,7 +2670,7 @@ parse_stab_members (void *dhandle, struct stab_handle *info,
 	      ++*pp;
 	      voffset &= 0x7fffffff;
 
-	      if (**pp == ';' || *pp == '\0')
+	      if (**pp == ';' || **pp == '\0')
 		{
 		  /* Must be g++ version 1.  */
 		  context = DEBUG_TYPE_NULL;
@@ -2880,6 +2880,7 @@ parse_stab_argtypes (void *dhandle, struct stab_handle *info,
 	  && fieldname[1] == 'p'
 	  && (fieldname[2] == '$' || fieldname[2] == '.'))
 	{
+#if (HAS_DEMANGLE)
 	  const char *opname;
 
 	  opname = cplus_mangle_opname (fieldname + 3, 0);
@@ -2892,6 +2893,10 @@ parse_stab_argtypes (void *dhandle, struct stab_handle *info,
 	  physname = (char *) xmalloc (mangled_name_len);
 	  strncpy (physname, fieldname, 3);
 	  strcpy (physname + 3, opname);
+#else
+          /* Opname selection is no longer supported by libiberty's demangler.  */
+	  return DEBUG_TYPE_NULL;
+#endif
 	}
       else
 	{

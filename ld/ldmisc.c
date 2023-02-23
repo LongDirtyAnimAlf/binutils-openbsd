@@ -62,6 +62,17 @@
  %v hex bfd_vma, no leading zeros
 */
 
+char *strsep(char **stringp, const char *delim) {
+    char *rv = *stringp;
+    if (rv) {
+        *stringp += strcspn(*stringp, delim);
+        if (**stringp)
+            *(*stringp)++ = '\0';
+        else
+            *stringp = 0; }
+    return rv;
+}
+
 static void
 vfinfo (FILE *fp, const char *fmt, va_list arg, bfd_boolean is_warning)
 {
@@ -430,12 +441,6 @@ vfinfo (FILE *fp, const char *fmt, va_list arg, bfd_boolean is_warning)
 
   if (fatal)
     xexit (1);
-}
-
-char *
-strsep (char **source_ptr,const char *delim)
-{
-    return strtok_r (*source_ptr, delim, source_ptr);
 }
 
 /* Wrapper around cplus_demangle.  Strips leading underscores and

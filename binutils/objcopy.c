@@ -2627,7 +2627,11 @@ strip_main (int argc, char *argv[])
 	  if (preserve_dates)
 	    set_times (tmpname, &statbuf);
 	  if (output_file == NULL)
-	    smart_rename (tmpname, argv[i], preserve_dates);
+	    {
+		int ret = smart_rename (tmpname, argv[i], preserve_dates);
+		if (ret != 0)
+		    hold_status = ret;
+	    }
 	  status = hold_status;
 	}
       else
@@ -3293,6 +3297,11 @@ main (int argc, char *argv[])
   xmalloc_set_program_name (program_name);
 
   START_PROGRESS (program_name, 0);
+
+#if defined (HAVE_PLEDGE)
+  if (pledge ("stdio rpath wpath cpath fattr", NULL) == -1)
+    fatal (_("pledge: %s"), strerror (errno));
+#endif
 
   expandargv (&argc, &argv);
 

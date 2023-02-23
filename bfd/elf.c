@@ -1103,6 +1103,7 @@ get_segment_type (unsigned int p_type)
     case PT_OPENBSD_RANDOMIZE: pt = "OPENBSD_RANDOMIZE"; break;
     case PT_OPENBSD_WXNEEDED: pt = "OPENBSD_WXNEEDED"; break;
     case PT_OPENBSD_BOOTDATA: pt = "OPENBSD_BOOTDATA"; break;
+    case PT_OPENBSD_MUTABLE: pt = "OPENBSD_MUTABLE"; break;
     default: pt = NULL; break;
     }
   return pt;
@@ -1258,6 +1259,9 @@ _bfd_elf_print_private_bfd_data (bfd *abfd, void *farg)
 	    case DT_USED: name = "USED"; break;
 	    case DT_FILTER: name = "FILTER"; stringp = TRUE; break;
 	    case DT_GNU_HASH: name = "GNU_HASH"; break;
+	    case DT_RELR: name = "RELR"; break;
+	    case DT_RELRSZ: name = "RELRSZ"; break;
+	    case DT_RELRENT: name = "RELRENT"; break;
 	    }
 
 	  fprintf (f, "  %-11s ", name);
@@ -2121,6 +2125,9 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
       }
       break;
 
+    case SHT_RELR:
+      return _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex);
+
     case SHT_GNU_verdef:
       elf_dynverdef (abfd) = shindex;
       elf_tdata (abfd)->dynverdef_hdr = *hdr;
@@ -2639,6 +2646,9 @@ bfd_section_from_phdr (bfd *abfd, Elf_Internal_Phdr *hdr, int index)
       return _bfd_elf_make_section_from_phdr (abfd, hdr, index,
 					      "openbsd_wxneeded");
 
+    case PT_OPENBSD_MUTABLE:
+      return _bfd_elf_make_section_from_phdr (abfd, hdr, index,
+					      "openbsd_mutable");
     default:
       /* Check for any processor-specific program segment types.  */
       bed = get_elf_backend_data (abfd);
@@ -3643,7 +3653,7 @@ map_sections_to_segments (bfd *abfd)
   bfd_boolean writable;
   int tls_count = 0;
   asection *first_tls = NULL;
-  asection *dynsec, *eh_frame_hdr, *randomdata;
+  asection *dynsec, *eh_frame_hdr, *randomdata, *mutabledata;
   bfd_size_type amt;
 
   if (elf_tdata (abfd)->segment_map != NULL)
@@ -3991,6 +4001,24 @@ map_sections_to_segments (bfd *abfd)
       m->p_type = PT_OPENBSD_RANDOMIZE;
       m->count = 1;
       m->sections[0] = randomdata->output_section;
+
+      *pm = m;
+      pm = &m->next;
+    }
+
+  /* If there is a .openbsd.mutable section, throw in a PT_OPENBSD_MUTABLE
+     segment.  */
+  mutabledata = bfd_get_section_by_name (abfd, ".openbsd.mutable");
+  if (mutabledata != NULL && (mutabledata->flags & SEC_LOAD) != 0)
+    {
+      amt = sizeof (struct elf_segment_map);
+      m = bfd_zalloc (abfd, amt);
+      if (m == NULL)
+	goto error_return;
+      m->next = NULL;
+      m->p_type = PT_OPENBSD_MUTABLE;
+      m->count = 1;
+      m->sections[0] = mutabledata->output_section;
 
       *pm = m;
       pm = &m->next;
@@ -4569,7 +4597,8 @@ assign_file_positions_for_segments (bfd *abfd, struct bfd_link_info *link_info)
 
 	  if (! m->p_flags_valid)
 	    {
-	      p->p_flags |= PF_R;
+	      if ((flags & SEC_CODE) == 0 || !link_info->execute_only)
+	        p->p_flags |= PF_R;
 	      if ((flags & SEC_CODE) != 0)
 		p->p_flags |= PF_X;
 	      if ((flags & SEC_READONLY) == 0)
@@ -4738,6 +4767,12 @@ get_program_header_size (bfd *abfd)
   if (bfd_get_section_by_name (abfd, ".openbsd.randomdata") != NULL)
     {
       /* We need a PT_OPENBSD_RANDOMIZE segment.  */
+      ++segs;
+    }
+
+  if (bfd_get_section_by_name (abfd, ".openbsd.mutable") != NULL)
+    {
+      /* We need a PT_OPENBSD_MUTABLE segment.  */
       ++segs;
     }
 

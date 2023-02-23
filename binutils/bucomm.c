@@ -39,212 +39,75 @@ typedef long time_t;
 #endif
 #endif
 
-#if defined(_WIN32)
-#include <time.h>
-#include <math.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <windows.h>
-#include <accctrl.h>
-#include <aclapi.h>
-
-static PSECURITY_DESCRIPTOR
-create_sd (int permissions)
-{
-  PSECURITY_DESCRIPTOR pSD = NULL;
-  int i;
-  int j;
-  EXPLICIT_ACCESS ea[3];
-  PSID sids[3] = { NULL, NULL, NULL };
-  WELL_KNOWN_SID_TYPE sidtypes[3] = { WinCreatorOwnerSid, WinCreatorGroupSid, WinWorldSid };
-  int ea_len = 0;
-  DWORD dwRes, dwDisposition;
-  PACL pACL = NULL;
-
-  /* Initialize a security descriptor. */
-  pSD = (PSECURITY_DESCRIPTOR) LocalAlloc (LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
-  if (NULL == pSD)
-  {
-    errno = ENOMEM;
-    return NULL;
-  }
-
-  if (!InitializeSecurityDescriptor (pSD, SECURITY_DESCRIPTOR_REVISION))
-  {
-    LocalFree (pSD);
-    errno = EIO;
-    return NULL;
-  }
-
-  for (i = 0; i < 3; i++)
-  {
-    BOOL b;
-    DWORD bytes;
-    int imasked = permissions & (07 << (2 - i));
-    if (!imasked)
-      continue;
-
-    bytes = SECURITY_MAX_SID_SIZE;
-    sids[ea_len] = (PSID) LocalAlloc (LMEM_FIXED, bytes);
-    if (NULL == sids[ea_len])
-    {
-      errno = ENOMEM;
-      LocalFree (pSD);
-      for (j = 0; j < ea_len; j++)
-      {
-        if (sids[j] != NULL)
-        {
-          LocalFree (sids[j]);
-          sids[j] = NULL;
-        }
-      }
-      return NULL;
-    }
-
-    b = CreateWellKnownSid (sidtypes[i], NULL, sids[ea_len], &bytes);
-    if (!b)
-    {
-      errno = EINVAL;
-      LocalFree (pSD);
-      for (j = 0; j < ea_len; j++)
-      {
-        if (sids[j] != NULL)
-        {
-          LocalFree (sids[j]);
-          sids[j] = NULL;
-        }
-      }
-      return NULL;
-    }
-
-    /* Initialize an EXPLICIT_ACCESS structure for an ACE. */
-    ZeroMemory (&ea[ea_len], sizeof(EXPLICIT_ACCESS));
-    bytes = 0;
-    if (01 & imasked)
-      bytes = bytes | GENERIC_READ;
-    if (02 & imasked)
-      bytes = bytes | GENERIC_WRITE;
-    if (04 & imasked)
-      bytes = bytes | GENERIC_EXECUTE;
-    ea[ea_len].grfAccessPermissions = bytes;
-    ea[ea_len].grfAccessMode = SET_ACCESS;
-    ea[ea_len].grfInheritance= NO_INHERITANCE;
-    ea[ea_len].Trustee.TrusteeForm = TRUSTEE_IS_SID;
-    ea[ea_len].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
-    ea[ea_len].Trustee.ptstrName  = (LPTSTR) sids[ea_len];
-    ea_len = ea_len + 1;
-  }
-
-  /* Create a new ACL that contains the new ACEs. */
-  dwRes = SetEntriesInAcl (ea_len, ea, NULL, &pACL);
-  if (ERROR_SUCCESS != dwRes)
-  {
-    errno = EIO;
-    LocalFree (pSD);
-    for (j = 0; j < ea_len; j++)
-    {
-      if (sids[j] != NULL)
-      {
-        LocalFree (sids[j]);
-        sids[j] = NULL;
-      }
-    }
-    return NULL;
-  }
-
-  for (j = 0; j < ea_len; j++)
-  {
-    if (sids[j] != NULL)
-    {
-      LocalFree (sids[j]);
-      sids[j] = NULL;
-    }
-  }
-
-  /* Add the ACL to the security descriptor. */
-  if (!SetSecurityDescriptorDacl (pSD,
-          TRUE,     // bDaclPresent flag
-          pACL,
-          FALSE))   // not a default DACL
-  {
-    errno = EIO;
-    LocalFree (pSD);
-    LocalFree (pACL);
-    return NULL;
-  }
-
-  return pSD;
-}
-
-static void
-free_sd (PSECURITY_DESCRIPTOR sd)
-{
-  BOOL b, present, defaulted;
-  PACL pACL = NULL;
-  present = FALSE;
-  b = GetSecurityDescriptorDacl (sd, &present, &pACL, &defaulted);
-  if (b && present && !defaulted && pACL)
-    LocalFree (pACL);
-  LocalFree (sd);
-}
-
-static void
-randtemplate (char *template, size_t l)
-{
-  int i;
-  for (i = l - 6; i < l; i++)
-  {
-    int r = rand ();
-    if ((r / (RAND_MAX + 1)) > ((RAND_MAX + 1) / 2))
-      template[i] = 'A' + (double) rand () / (RAND_MAX + 1) * ('Z' - 'A');
-    else
-      template[i] = 'a' + (double) rand () / (RAND_MAX + 1) * ('z' - 'a');
-  }
-}
 
 static char *
-mkdtemp (char *template)
+template_in_dir (const char *path)
 {
-  int i;
-  size_t l;
-  BOOL b;
-  SECURITY_ATTRIBUTES sa;
+#define template "stXXXXXX"
+  const char *slash = strrchr (path, '/');
+  char *tmpname;
+  size_t len;
 
-  if (template == NULL)
+#ifdef HAVE_DOS_BASED_FILE_SYSTEM
   {
-    errno = EINVAL;
-    return NULL;
+    /* We could have foo/bar\\baz, or foo\\bar, or d:bar.  */
+    char *bslash = strrchr (path, '\\');
+
+    if (slash == NULL || (bslash != NULL && bslash > slash))
+      slash = bslash;
+    if (slash == NULL && path[0] != '\0' && path[1] == ':')
+      slash = path + 1;
   }
-  l = strlen (template);
-  if (l < 6 || strcmp (&template[l - 6], "XXXXXX") != 0)
-  {
-    errno = EINVAL;
-    return NULL;
-  }
-  srand(time (NULL));
-  sa.nLength = sizeof (sa);
-  sa.lpSecurityDescriptor = create_sd (0700);
-  sa.bInheritHandle = FALSE;
-  do
-  {
-    randtemplate (template, l);
-    SetLastError (0);
-    b = CreateDirectoryA (template, &sa);
-  } while (!b && GetLastError () == ERROR_ALREADY_EXISTS);
-  free_sd (sa.lpSecurityDescriptor);
-  if (!b)
-  {
-    errno = EIO;
-    return NULL;
-  }
-  else
-  {
-    errno = 0;
-    return template;
-  }
-}
 #endif
+
+  if (slash != (char *) NULL)
+    {
+      len = slash - path;
+      tmpname = (char *) xmalloc (len + sizeof (template) + 2);
+      memcpy (tmpname, path, len);
+
+#ifdef HAVE_DOS_BASED_FILE_SYSTEM
+      /* If tmpname is "X:", appending a slash will make it a root
+	 directory on drive X, which is NOT the same as the current
+	 directory on drive X.  */
+      if (len == 2 && tmpname[1] == ':')
+	tmpname[len++] = '.';
+#endif
+      tmpname[len++] = '/';
+    }
+  else
+    {
+      tmpname = (char *) xmalloc (sizeof (template));
+      len = 0;
+    }
+
+  memcpy (tmpname + len, template, sizeof (template));
+  return tmpname;
+#undef template
+}
+
+char *
+make_tempdir (const char *filename)
+{
+  char *tmpname = template_in_dir (filename);
+  char *ret;
+
+#ifdef HAVE_MKDTEMP
+  ret = mkdtemp (tmpname);
+#else
+  ret = mktemp (tmpname);
+#if defined (_WIN32) && !defined (__CYGWIN32__)
+  if (mkdir (tmpname) != 0)
+    ret = NULL;
+#else
+  if (mkdir (tmpname, 0700) != 0)
+    ret = NULL;
+#endif
+#endif
+  if (ret == NULL)
+    free (tmpname);
+  return ret;
+}
 
 static const char * endian_string (enum bfd_endian);
 static int display_target_list (void);
@@ -638,14 +501,22 @@ make_tempname (char *filename, int isdir)
 
   if (isdir)
     {
-      if (mkdtemp (tmpname) == (char *) NULL)
+      if (make_tempdir (tmpname) == (char *) NULL)
       tmpname = NULL;
     }
   else
     {
       int fd;
 
+#ifdef HAVE_MKSTEMP
       fd = mkstemp (tmpname);
+#else
+      tmpname = mktemp (tmpname);
+      if (tmpname == NULL)
+        fd = -1;
+      else
+        fd = open (tmpname, O_RDWR | O_CREAT | O_EXCL, 0600);
+#endif
       if (fd == -1)
       tmpname = NULL;
       else
