@@ -30,13 +30,13 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #else
-extern PTR malloc ();
+extern void *malloc ();
 #endif
 
 #ifdef HAVE_STRING_H
 #include <string.h>
 #else
-extern PTR memset ();
+extern void *memset ();
 #endif
 
 #ifndef MAX
@@ -299,7 +299,7 @@ static const struct error_info error_table[] =
   ENTRY(EREMCHG, "EREMCHG", "Remote address changed"),
 #endif
 #if defined (ELIBACC)
-  ENTRY(ELIBACC, "ELIBACC", "Can not access a needed shared library"),
+  ENTRY(ELIBACC, "ELIBACC", "Cannot access a needed shared library"),
 #endif
 #if defined (ELIBBAD)
   ENTRY(ELIBBAD, "ELIBBAD", "Accessing a corrupted shared library"),
@@ -469,8 +469,13 @@ static const char **sys_errlist;
 
 #else
 
+
+#ifndef sys_nerr
 extern int sys_nerr;
+#endif
+#ifndef sys_errlist
 extern char *sys_errlist[];
+#endif
 
 #endif
 
@@ -650,7 +655,7 @@ strerror (int errnoval)
   else if ((sys_errlist == NULL) || (sys_errlist[errnoval] == NULL))
     {
       /* In range, but no sys_errlist or no entry at this index. */
-      snprintf (buf, sizeof buf, "Error %d", errnoval);
+      sprintf (buf, "Error %d", errnoval);
       msg = buf;
     }
   else
@@ -712,7 +717,7 @@ strerrno (int errnoval)
   else if ((error_names == NULL) || (error_names[errnoval] == NULL))
     {
       /* In range, but no error_names or no entry at this index. */
-      snprintf (buf, sizeof buf, "Error %d", errnoval);
+      sprintf (buf, "Error %d", errnoval);
       name = (const char *) buf;
     }
   else

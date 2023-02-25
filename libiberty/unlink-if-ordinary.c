@@ -1,5 +1,5 @@
 /* unlink-if-ordinary.c - remove link to a file unless it is special
-   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2004-2023 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.  This library is free
 software; you can redistribute it and/or modify it under the
@@ -62,6 +62,12 @@ was made to unlink the file because it is special.
 int
 unlink_if_ordinary (const char *name)
 {
+/* MS-Windows 'stat' function (and in turn, S_ISREG)
+   reports the null device as a regular file.  */
+#ifdef _WIN32
+  if (stricmp (name, "nul") == 0)
+    return 1;
+#endif
   struct stat st;
 
   if (lstat (name, &st) == 0

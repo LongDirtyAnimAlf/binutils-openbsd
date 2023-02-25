@@ -9,7 +9,7 @@
 /* We need to declare sys_siglist, because even if the system provides
    it we can't assume that it is declared in <signal.h> (for example,
    SunOS provides sys_siglist, but it does not declare it in any
-   header file).  fHowever, we can't declare sys_siglist portably,
+   header file).  However, we can't declare sys_siglist portably,
    because on some systems it is declared with const and on some
    systems it is declared without const.  If we were using autoconf,
    we could work out the right declaration.  Until, then we just
@@ -26,13 +26,13 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #else
-extern PTR malloc ();
+extern void *malloc ();
 #endif
 
 #ifdef HAVE_STRING_H
 #include <string.h>
 #else
-extern PTR memset ();
+extern void *memset ();
 #endif
 
 /* Undefine the macro we used to hide the definition of sys_siglist
@@ -404,10 +404,10 @@ call to @code{strsignal}.
 
 #ifndef HAVE_STRSIGNAL
 
-const char *
+char *
 strsignal (int signo)
 {
-  const char *msg;
+  char *msg;
   static char buf[32];
 
 #ifndef HAVE_SYS_SIGLIST
@@ -427,15 +427,17 @@ strsignal (int signo)
   else if ((sys_siglist == NULL) || (sys_siglist[signo] == NULL))
     {
       /* In range, but no sys_siglist or no entry at this index. */
-      snprintf (buf, sizeof buf, "Signal %d", signo);
-      msg = (const char *) buf;
+      sprintf (buf, "Signal %d", signo);
+      msg = buf;
     }
   else
     {
-      /* In range, and a valid message.  Just return the message. */
-      msg = (const char *) sys_siglist[signo];
+      /* In range, and a valid message.  Just return the message.  We
+	 can safely cast away const, since POSIX says the user must
+	 not modify the result.	 */
+      msg = (char *) sys_siglist[signo];
     }
-  
+
   return (msg);
 }
 
@@ -482,7 +484,7 @@ strsigno (int signo)
   else if ((signal_names == NULL) || (signal_names[signo] == NULL))
     {
       /* In range, but no signal_names or no entry at this index. */
-      snprintf (buf, sizeof buf, "Signal %d", signo);
+      sprintf (buf, "Signal %d", signo);
       name = (const char *) buf;
     }
   else
@@ -536,7 +538,7 @@ strtosigno (const char *name)
 
 /*
 
-@deftypefn Supplemental void psignal (unsigned @var{signo}, char *@var{message})
+@deftypefn Supplemental void psignal (int @var{signo}, char *@var{message})
 
 Print @var{message} to the standard error, followed by a colon,
 followed by the description of the signal specified by @var{signo},
@@ -549,7 +551,7 @@ followed by a newline.
 #ifndef HAVE_PSIGNAL
 
 void
-psignal (unsigned signo, char *message)
+psignal (int signo, char *message)
 {
   if (signal_names == NULL)
     {

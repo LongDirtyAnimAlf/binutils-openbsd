@@ -113,7 +113,7 @@ static const char * endian_string (enum bfd_endian);
 static int display_target_list (void);
 static int display_info_table (int, int);
 static int display_target_tables (void);
-
+
 /* Error reporting.  */
 
 char *program_name;

@@ -1,6 +1,7 @@
 /*
 
-@deftypefn Supplemental void* memchr (const void *@var{s}, int @var{c}, size_t @var{n})
+@deftypefn Supplemental void* memchr (const void *@var{s}, int @var{c}, @
+  size_t @var{n})
 
 This function searches memory starting at @code{*@var{s}} for the
 character @var{c}.  The search only ends with the first occurrence of
@@ -17,15 +18,15 @@ returned.
 #include <ansidecl.h>
 #include <stddef.h>
 
-PTR
-memchr (register const PTR src_void, int c, size_t length)
+void *
+memchr (register const void *src_void, int c, size_t length)
 {
   const unsigned char *src = (const unsigned char *)src_void;
   
   while (length-- > 0)
   {
     if (*src == c)
-     return (PTR)src;
+     return (void *)src;
     src++;
   }
   return NULL;

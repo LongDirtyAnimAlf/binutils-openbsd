@@ -1,7 +1,6 @@
 /* Utilities to execute a program in a subprocess (possibly linked by pipes
    with other subprocesses), and wait for it.  Shared logic.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004
-   Free Software Foundation, Inc.
+   Copyright (C) 1996-2023 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
@@ -25,6 +24,12 @@ Boston, MA 02110-1301, USA.  */
 #include "config.h"
 #include "libiberty.h"
 #include <stdio.h>
+
+/* pid_t is may defined by config.h or sys/types.h needs to be
+   included.  */
+#if !defined(pid_t) && defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
 
 #define install_error_msg "installation problem, cannot exec `%s'"
 
@@ -59,10 +64,12 @@ struct pex_obj
   char *next_input_name;
   /* Whether next_input_name was allocated using malloc.  */
   int next_input_name_allocated;
+  /* If not -1, stderr pipe from the last process.  */
+  int stderr_pipe;
   /* Number of child processes.  */
   int count;
   /* PIDs of child processes; array allocated using malloc.  */
-  long *children;
+  pid_t *children;
   /* Exit statuses of child processes; array allocated using malloc.  */
   int *status;
   /* Time used by child processes; array allocated using malloc.  */
@@ -73,6 +80,8 @@ struct pex_obj
   FILE *input_file;
   /* FILE created by pex_read_output.  */
   FILE *read_output;
+  /* FILE created by pex_read_err.  */
+  FILE *read_err;
   /* Number of temporary files to remove.  */
   int remove_count;
   /* List of temporary files to remove; array allocated using malloc
@@ -94,25 +103,29 @@ struct pex_funcs
   /* Open file NAME for writing.  If BINARY is non-zero, open in
      binary mode.  Return >= 0 on success, -1 on error.  */
   int (*open_write) (struct pex_obj *, const char */* name */,
-                     int /* binary */);
+                     int /* binary */, int /* append */);
   /* Execute a child process.  FLAGS, EXECUTABLE, ARGV, ERR are from
-     pex_run.  IN, OUT, ERRDES are each a descriptor, from open_read,
-     open_write, or pipe, or they are one of STDIN_FILE_NO,
-     STDOUT_FILE_NO or STDERR_FILE_NO; if not STD*_FILE_NO, they
-     should be closed.  The function should handle the
+     pex_run.  IN, OUT, ERRDES, TOCLOSE are all descriptors, from
+     open_read, open_write, or pipe, or they are one of STDIN_FILE_NO,
+     STDOUT_FILE_NO or STDERR_FILE_NO; if IN, OUT, and ERRDES are not
+     STD*_FILE_NO, they should be closed.  If the descriptor TOCLOSE
+     is not -1, and the system supports pipes, TOCLOSE should be
+     closed in the child process.  The function should handle the
      PEX_STDERR_TO_STDOUT flag.  Return >= 0 on success, or -1 on
      error and set *ERRMSG and *ERR.  */
-  long (*exec_child) (struct pex_obj *, int /* flags */,
+  pid_t (*exec_child) (struct pex_obj *, int /* flags */,
                       const char */* executable */, char * const * /* argv */,
+                      char * const * /* env */,
                       int /* in */, int /* out */, int /* errdes */,
-		      const char **/* errmsg */, int */* err */);
+		      int /* toclose */, const char **/* errmsg */,
+		      int */* err */);
   /* Close a descriptor.  Return 0 on success, -1 on error.  */
   int (*close) (struct pex_obj *, int);
   /* Wait for a child to complete, returning exit status in *STATUS
      and time in *TIME (if it is not null).  CHILD is from fork.  DONE
      is 1 if this is called via pex_free.  ERRMSG and ERR are as in
      fork.  Return 0 on success, -1 on error.  */
-  int (*wait) (struct pex_obj *, long /* child */, int * /* status */,
+  pid_t (*wait) (struct pex_obj *, pid_t /* child */, int * /* status */,
                struct pex_time * /* time */, int /* done */,
                const char ** /* errmsg */, int * /* err */);
   /* Create a pipe (only called if PEX_USE_PIPES is set) storing two

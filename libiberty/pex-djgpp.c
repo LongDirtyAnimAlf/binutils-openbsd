@@ -1,7 +1,6 @@
 /* Utilities to execute a program in a subprocess (possibly linked by pipes
    with other subprocesses), and wait for it.  DJGPP specialization.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2005
-   Free Software Foundation, Inc.
+   Copyright (C) 1996-2023 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
@@ -43,12 +42,13 @@ extern int errno;
 #endif
 
 static int pex_djgpp_open_read (struct pex_obj *, const char *, int);
-static int pex_djgpp_open_write (struct pex_obj *, const char *, int);
-static long pex_djgpp_exec_child (struct pex_obj *, int, const char *,
-				  char * const *, int, int, int,
+static int pex_djgpp_open_write (struct pex_obj *, const char *, int, int);
+static pid_t pex_djgpp_exec_child (struct pex_obj *, int, const char *,
+				  char * const *, char * const *,
+				  int, int, int, int,
 				  const char **, int *);
 static int pex_djgpp_close (struct pex_obj *, int);
-static int pex_djgpp_wait (struct pex_obj *, long, int *, struct pex_time *,
+static pid_t pex_djgpp_wait (struct pex_obj *, pid_t, int *, struct pex_time *,
 			   int, const char **, int *);
 
 /* The list of functions we pass to the common routines.  */
@@ -89,10 +89,12 @@ pex_djgpp_open_read (struct pex_obj *obj ATTRIBUTE_UNUSED,
 
 static int
 pex_djgpp_open_write (struct pex_obj *obj ATTRIBUTE_UNUSED,
-		      const char *name, int binary)
+		      const char *name, int binary, int append)
 {
   /* Note that we can't use O_EXCL here because gcc may have already
      created the temporary file via make_temp_file.  */
+  if (append)
+    return -1;
   return open (name,
 	       (O_WRONLY | O_CREAT | O_TRUNC
 		| (binary ? O_BINARY : O_TEXT)),
@@ -109,10 +111,12 @@ pex_djgpp_close (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd)
 
 /* Execute a child.  */
 
-static long
+static pid_t
 pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
-		      char * const * argv, int in, int out, int errdes,
-		      const char **errmsg, int *err)
+		      char * const * argv, char * const * env,
+                      int in, int out, int errdes,
+		      int toclose ATTRIBUTE_UNUSED, const char **errmsg,
+		      int *err)
 {
   int org_in, org_out, org_errdes;
   int status;
@@ -129,19 +133,19 @@ pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
 	{
 	  *err = errno;
 	  *errmsg = "dup";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (dup2 (in, STDIN_FILE_NO) < 0)
 	{
 	  *err = errno;
 	  *errmsg = "dup2";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (close (in) < 0)
 	{
 	  *err = errno;
 	  *errmsg = "close";
-	  return -1;
+	  return (pid_t) -1;
 	}
     }
 
@@ -152,19 +156,19 @@ pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
 	{
 	  *err = errno;
 	  *errmsg = "dup";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (dup2 (out, STDOUT_FILE_NO) < 0)
 	{
 	  *err = errno;
 	  *errmsg = "dup2";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (close (out) < 0)
 	{
 	  *err = errno;
 	  *errmsg = "close";
-	  return -1;
+	  return (pid_t) -1;
 	}
     }
 
@@ -176,14 +180,14 @@ pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
 	{
 	  *err = errno;
 	  *errmsg = "dup";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (dup2 ((flags & PEX_STDERR_TO_STDOUT) != 0 ? STDOUT_FILE_NO : errdes,
 		 STDERR_FILE_NO) < 0)
 	{
 	  *err = errno;
 	  *errmsg = "dup2";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (errdes != STDERR_FILE_NO)
 	{
@@ -191,13 +195,17 @@ pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
 	    {
 	      *err = errno;
 	      *errmsg = "close";
-	      return -1;
+	      return (pid_t) -1;
 	    }
 	}
     }
 
-  status = (((flags & PEX_SEARCH) != 0 ? spawnvp : spawnv)
-	    (P_WAIT, executable, (char * const *) argv));
+  if (env)
+    status = (((flags & PEX_SEARCH) != 0 ? spawnvpe : spawnve)
+	      (P_WAIT, executable, argv, env));
+  else
+    status = (((flags & PEX_SEARCH) != 0 ? spawnvp : spawnv)
+  	      (P_WAIT, executable, argv));
 
   if (status == -1)
     {
@@ -211,13 +219,13 @@ pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
 	{
 	  *err = errno;
 	  *errmsg = "dup2";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (close (org_in) < 0)
 	{
 	  *err = errno;
 	  *errmsg = "close";
-	  return -1;
+	  return (pid_t) -1;
 	}
     }
 
@@ -227,13 +235,13 @@ pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
 	{
 	  *err = errno;
 	  *errmsg = "dup2";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (close (org_out) < 0)
 	{
 	  *err = errno;
 	  *errmsg = "close";
-	  return -1;
+	  return (pid_t) -1;
 	}
     }
 
@@ -244,13 +252,13 @@ pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
 	{
 	  *err = errno;
 	  *errmsg = "dup2";
-	  return -1;
+	  return (pid_t) -1;
 	}
       if (close (org_errdes) < 0)
 	{
 	  *err = errno;
 	  *errmsg = "close";
-	  return -1;
+	  return (pid_t) -1;
 	}
     }
 
@@ -262,15 +270,15 @@ pex_djgpp_exec_child (struct pex_obj *obj, int flags, const char *executable,
   statuses[obj->count] = status;
   obj->sysdep = (void *) statuses;
 
-  return obj->count;
+  return (pid_t) obj->count;
 }
 
 /* Wait for a child process to complete.  Actually the child process
    has already completed, and we just need to return the exit
    status.  */
 
-static int
-pex_djgpp_wait (struct pex_obj *obj, long pid, int *status,
+static pid_t
+pex_djgpp_wait (struct pex_obj *obj, pid_t pid, int *status,
 		struct pex_time *time, int done ATTRIBUTE_UNUSED,
 		const char **errmsg ATTRIBUTE_UNUSED,
 		int *err ATTRIBUTE_UNUSED)

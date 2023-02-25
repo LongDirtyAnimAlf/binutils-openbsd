@@ -1,5 +1,5 @@
 /* Common code for executing a program in a sub-process.
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005-2023 Free Software Foundation, Inc.
    Written by Ian Lance Taylor <ian@airs.com>.
 
 This file is part of the libiberty library.
@@ -62,6 +62,7 @@ pex_init_common (int flags, const char *pname, const char *tempbase,
   obj->next_input = STDIN_FILE_NO;
   obj->next_input_name = NULL;
   obj->next_input_name_allocated = 0;
+  obj->stderr_pipe = -1;
   obj->count = 0;
   obj->children = NULL;
   obj->status = NULL;
@@ -69,6 +70,7 @@ pex_init_common (int flags, const char *pname, const char *tempbase,
   obj->number_waited = 0;
   obj->input_file = NULL;
   obj->read_output = NULL;
+  obj->read_err = NULL;
   obj->remove_count = 0;
   obj->remove = NULL;
   obj->funcs = funcs;
@@ -142,19 +144,23 @@ temp_file (struct pex_obj *obj, int flags, char *name)
   return name;
 }
 
-/* Run a program.  */
+
+/* As for pex_run (), but permits the environment for the child process
+   to be specified. */
 
 const char *
-pex_run (struct pex_obj *obj, int flags, const char *executable,
-	 char * const * argv, const char *orig_outname, const char *errname,
-	 int *err)
+pex_run_in_environment (struct pex_obj *obj, int flags, const char *executable,
+       	                char * const * argv, char * const * env,
+                        const char *orig_outname, const char *errname,
+                  	int *err)
 {
   const char *errmsg;
   int in, out, errdes;
   char *outname;
   int outname_allocated;
   int p[2];
-  long pid;
+  int toclose;
+  pid_t pid;
 
   in = -1;
   out = -1;
@@ -261,7 +267,8 @@ pex_run (struct pex_obj *obj, int flags, const char *executable,
   if (out < 0)
     {
       out = obj->funcs->open_write (obj, outname,
-				    (flags & PEX_BINARY_OUTPUT) != 0);
+				    (flags & PEX_BINARY_OUTPUT) != 0,
+				    (flags & PEX_STDOUT_APPEND) != 0);
       if (out < 0)
 	{
 	  *err = errno;
@@ -278,14 +285,44 @@ pex_run (struct pex_obj *obj, int flags, const char *executable,
 
   /* Set ERRDES.  */
 
+  if (errname != NULL && (flags & PEX_STDERR_TO_PIPE) != 0)
+    {
+      *err = 0;
+      errmsg = "both ERRNAME and PEX_STDERR_TO_PIPE specified.";
+      goto error_exit;
+    }
+
+  if (obj->stderr_pipe != -1)
+    {
+      *err = 0;
+      errmsg = "PEX_STDERR_TO_PIPE used in the middle of pipeline";
+      goto error_exit;
+    }
+
   if (errname == NULL)
-    errdes = STDERR_FILE_NO;
+    {
+      if (flags & PEX_STDERR_TO_PIPE)
+	{
+	  if (obj->funcs->pipe (obj, p, (flags & PEX_BINARY_ERROR) != 0) < 0)
+	    {
+	      *err = errno;
+	      errmsg = "pipe";
+	      goto error_exit;
+	    }
+	  
+	  errdes = p[WRITE_PORT];
+	  obj->stderr_pipe = p[READ_PORT];	  
+	}
+      else
+	{
+	  errdes = STDERR_FILE_NO;
+	}
+    }
   else
     {
-      /* We assume that stderr is in text mode--it certainly shouldn't
-	 be controlled by PEX_BINARY_OUTPUT.  If necessary, we can add
-	 a PEX_BINARY_STDERR flag.  */
-      errdes = obj->funcs->open_write (obj, errname, 0);
+      errdes = obj->funcs->open_write (obj, errname,
+				       (flags & PEX_BINARY_ERROR) != 0,
+				       (flags & PEX_STDERR_APPEND) != 0);
       if (errdes < 0)
 	{
 	  *err = errno;
@@ -294,15 +331,23 @@ pex_run (struct pex_obj *obj, int flags, const char *executable,
 	}
     }
 
+  /* If we are using pipes, the child process has to close the next
+     input pipe.  */
+
+  if ((obj->flags & PEX_USE_PIPES) == 0)
+    toclose = -1;
+  else
+    toclose = obj->next_input;
+
   /* Run the program.  */
 
-  pid = obj->funcs->exec_child (obj, flags, executable, argv, in, out, errdes,
-				&errmsg, err);
+  pid = obj->funcs->exec_child (obj, flags, executable, argv, env,
+				in, out, errdes, toclose, &errmsg, err);
   if (pid < 0)
     goto error_exit;
 
   ++obj->count;
-  obj->children = XRESIZEVEC (long, obj->children, obj->count);
+  obj->children = XRESIZEVEC (pid_t, obj->children, obj->count);
   obj->children[obj->count - 1] = pid;
 
   return NULL;
@@ -317,6 +362,17 @@ pex_run (struct pex_obj *obj, int flags, const char *executable,
   if (outname_allocated)
     free (outname);
   return errmsg;
+}
+
+/* Run a program.  */
+
+const char *
+pex_run (struct pex_obj *obj, int flags, const char *executable,
+       	 char * const * argv, const char *orig_outname, const char *errname,
+         int *err)
+{
+  return pex_run_in_environment (obj, flags, executable, argv, NULL,
+				 orig_outname, errname, err);
 }
 
 /* Return a FILE pointer for a temporary file to fill with input for
@@ -442,6 +498,19 @@ pex_read_output (struct pex_obj *obj, int binary)
   return obj->read_output;
 }
 
+FILE *
+pex_read_err (struct pex_obj *obj, int binary)
+{
+  int o;
+  
+  o = obj->stderr_pipe;
+  if (o < 0 || o == STDIN_FILE_NO)
+    return NULL;
+  obj->read_err = obj->funcs->fdopenr (obj, o, binary);
+  obj->stderr_pipe = -1;
+  return obj->read_err;    
+}
+
 /* Get the exit status and, if requested, the resource time for all
    the child processes.  Return 0 on failure, 1 on success.  */
 
@@ -531,8 +600,17 @@ pex_get_times (struct pex_obj *obj, int count, struct pex_time *vector)
 void
 pex_free (struct pex_obj *obj)
 {
+  /* Close pipe file descriptors corresponding to child's stdout and
+     stderr so that the child does not hang trying to output something
+     while we're waiting for it.  */
   if (obj->next_input >= 0 && obj->next_input != STDIN_FILE_NO)
     obj->funcs->close (obj, obj->next_input);
+  if (obj->stderr_pipe >= 0 && obj->stderr_pipe != STDIN_FILE_NO)
+    obj->funcs->close (obj, obj->stderr_pipe);
+  if (obj->read_output != NULL)
+    fclose (obj->read_output);
+  if (obj->read_err != NULL)
+    fclose (obj->read_err);
 
   /* If the caller forgot to wait for the children, we do it here, to
      avoid zombies.  */
@@ -547,14 +625,9 @@ pex_free (struct pex_obj *obj)
 
   if (obj->next_input_name_allocated)
     free (obj->next_input_name);
-  if (obj->children != NULL)
-    free (obj->children);
-  if (obj->status != NULL)
-    free (obj->status);
-  if (obj->time != NULL)
-    free (obj->time);
-  if (obj->read_output != NULL)
-    fclose (obj->read_output);
+  free (obj->children);
+  free (obj->status);
+  free (obj->time);
 
   if (obj->remove_count > 0)
     {
