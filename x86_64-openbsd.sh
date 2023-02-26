@@ -17,7 +17,7 @@ target=$targetcpu-$targetos
 # Source and Install directories
 #---------------------------------------------------------------------------------
 
-BASEDIR=/home/superdad/openbsd         # the base dir for building binutils
+BASEDIR=$PWD
 SRCDIR=$BASEDIR/$sourcename-$version                # the source code dir for binutils
 prefix=$BASEDIR/cross/$target-$version           # installation directory
 
@@ -35,8 +35,9 @@ prefix=$BASEDIR/cross/$target-$version           # installation directory
 
 INCLUDE_FIX=""
 INCLUDE_FIX+="-D_GNU_SOURCE "
-#INCLUDE_FIX+="-Werror=cast-function-type "
-INCLUDE_FIX+="-Wno-cast-function-type "
+INCLUDE_FIX+="-Werror=cast-function-type "
+INCLUDE_FIX+="-Werror=incompatible-pointer-types "
+#INCLUDE_FIX+="-Wno-cast-function-type "
 #INCLUDE_FIX+="-Wwrite-strings "
 #INCLUDE_FIX+="-Wc++-compat "
 #INCLUDE_FIX+="-Wstrict-prototypes "
