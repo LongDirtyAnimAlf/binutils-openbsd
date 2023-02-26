@@ -346,7 +346,7 @@ ppcboot_get_symbol_info (ignore_abfd, symbol, ret)
 }
 
 #define ppcboot_bfd_is_target_special_symbol \
-  ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
+  ((bfd_boolean (*) (bfd *, asymbol *)) (void (*) (void)) bfd_false)
 #define ppcboot_bfd_is_local_label_name bfd_generic_is_local_label_name
 #define ppcboot_get_lineno _bfd_nosymbols_get_lineno
 #define ppcboot_find_nearest_line _bfd_nosymbols_find_nearest_line
@@ -356,9 +356,9 @@ ppcboot_get_symbol_info (ignore_abfd, symbol, ret)
 #define ppcboot_minisymbol_to_symbol _bfd_generic_minisymbol_to_symbol
 
 #define ppcboot_get_reloc_upper_bound \
-  ((long (*) PARAMS ((bfd *, asection *))) bfd_0l)
+  ((long (*) PARAMS ((bfd *, asection *))) (void (*) (void)) bfd_0l)
 #define ppcboot_canonicalize_reloc \
-  ((long (*) PARAMS ((bfd *, asection *, arelent **, asymbol **))) bfd_0l)
+  ((long (*) PARAMS ((bfd *, asection *, arelent **, asymbol **))) (void (*) (void)) bfd_0l)
 #define ppcboot_bfd_reloc_type_lookup _bfd_norelocs_bfd_reloc_type_lookup
 
 /* Write section contents of a ppcboot file.  */

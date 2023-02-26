@@ -499,7 +499,7 @@ get_filenum (const char *filename, unsigned int num)
    If an entry is added to the file table, return a pointer to the filename. */
 
 char *
-dwarf2_directive_file (int dummy ATTRIBUTE_UNUSED)
+dwarf2_directive_filename (void)
 {
   offsetT num;
   char *filename;
@@ -534,6 +534,12 @@ dwarf2_directive_file (int dummy ATTRIBUTE_UNUSED)
   get_filenum (filename, num);
 
   return filename;
+}
+
+void
+dwarf2_directive_file (int dummy ATTRIBUTE_UNUSED)
+{
+  (void) dwarf2_directive_filename ();
 }
 
 void

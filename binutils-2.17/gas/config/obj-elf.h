@@ -178,8 +178,11 @@ extern void obj_elf_data (int);
 extern void obj_elf_text (int);
 extern void obj_elf_change_section
   (const char *, int, int, int, const char *, int, int);
-extern struct fix *obj_elf_vtable_inherit (int);
-extern struct fix *obj_elf_vtable_entry (int);
+
+extern void obj_elf_vtable_inherit (int);
+extern void obj_elf_vtable_entry (int);
+extern struct fix * obj_elf_get_vtable_inherit (void);
+extern struct fix * obj_elf_get_vtable_entry (void);
 
 /* BFD wants to write the udata field, which is a no-no for the
    predefined section symbols in bfd/section.c.  They are read-only.  */

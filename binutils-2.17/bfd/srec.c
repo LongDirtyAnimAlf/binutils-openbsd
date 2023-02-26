@@ -1184,7 +1184,7 @@ srec_print_symbol (bfd *abfd,
 #define	srec_close_and_cleanup                    _bfd_generic_close_and_cleanup
 #define srec_bfd_free_cached_info                 _bfd_generic_bfd_free_cached_info
 #define srec_new_section_hook                     _bfd_generic_new_section_hook
-#define srec_bfd_is_target_special_symbol         ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
+#define srec_bfd_is_target_special_symbol         ((bfd_boolean (*) (bfd *, asymbol *)) (void (*) (void)) bfd_false)
 #define srec_bfd_is_local_label_name              bfd_generic_is_local_label_name
 #define srec_get_lineno                           _bfd_nosymbols_get_lineno
 #define srec_find_nearest_line                    _bfd_nosymbols_find_nearest_line
@@ -1193,8 +1193,8 @@ srec_print_symbol (bfd *abfd,
 #define srec_bfd_make_debug_symbol                _bfd_nosymbols_bfd_make_debug_symbol
 #define srec_read_minisymbols                     _bfd_generic_read_minisymbols
 #define srec_minisymbol_to_symbol                 _bfd_generic_minisymbol_to_symbol
-#define srec_get_reloc_upper_bound                ((long (*) (bfd *, asection *)) bfd_0l)
-#define srec_canonicalize_reloc                   ((long (*) (bfd *, asection *, arelent **, asymbol **)) bfd_0l)
+#define srec_get_reloc_upper_bound                ((long (*) (bfd *, asection *)) (void (*) (void)) bfd_0l)
+#define srec_canonicalize_reloc                   ((long (*) (bfd *, asection *, arelent **, asymbol **)) (void (*) (void)) bfd_0l)
 #define srec_bfd_reloc_type_lookup                _bfd_norelocs_bfd_reloc_type_lookup
 #define srec_get_section_contents_in_window       _bfd_generic_get_section_contents_in_window
 #define srec_bfd_get_relocated_section_contents   bfd_generic_get_relocated_section_contents

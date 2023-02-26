@@ -105,15 +105,15 @@ static const pseudo_typeS elf_pseudo_table[] =
   {"subsection", obj_elf_subsection, 0},
 
   /* These are GNU extensions to aid in garbage collecting C++ vtables.  */
-  {"vtable_inherit", (void (*) (int)) &obj_elf_vtable_inherit, 0},
-  {"vtable_entry", (void (*) (int)) &obj_elf_vtable_entry, 0},
+  {"vtable_inherit", obj_elf_vtable_inherit, 0},
+  {"vtable_entry", obj_elf_vtable_entry, 0},
 
   /* These are used for dwarf.  */
   {"2byte", cons, 2},
   {"4byte", cons, 4},
   {"8byte", cons, 8},
   /* These are used for dwarf2.  */
-  { "file", (void (*) (int)) dwarf2_directive_file, 0 },
+  { "file", dwarf2_directive_file, 0 },
   { "loc",  dwarf2_directive_loc,  0 },
   { "loc_mark_labels", dwarf2_directive_loc_mark_labels, 0 },
 
@@ -1246,7 +1246,7 @@ obj_elf_symver (int ignore ATTRIBUTE_UNUSED)
    syntax is ".vtable_inherit CHILDNAME, PARENTNAME".  */
 
 struct fix *
-obj_elf_vtable_inherit (int ignore ATTRIBUTE_UNUSED)
+obj_elf_get_vtable_inherit (void)
 {
   char *cname, *pname;
   symbolS *csym, *psym;
@@ -1312,12 +1312,21 @@ obj_elf_vtable_inherit (int ignore ATTRIBUTE_UNUSED)
 		  0, psym, 0, 0, BFD_RELOC_VTABLE_INHERIT);
 }
 
+/* This is a version of obj_elf_get_vtable_inherit() that is
+   suitable for use in struct _pseudo_type tables.  */
+
+void
+obj_elf_vtable_inherit (int ignore ATTRIBUTE_UNUSED)
+{
+  (void) obj_elf_get_vtable_inherit ();
+}
+
 /* This handles the .vtable_entry pseudo-op, which is used to indicate
    to the linker that a vtable slot was used.  The syntax is
    ".vtable_entry tablename, offset".  */
 
 struct fix *
-obj_elf_vtable_entry (int ignore ATTRIBUTE_UNUSED)
+obj_elf_get_vtable_entry (void)
 {
   char *name;
   symbolS *sym;
@@ -1350,6 +1359,15 @@ obj_elf_vtable_entry (int ignore ATTRIBUTE_UNUSED)
 
   return fix_new (frag_now, frag_now_fix (), 0, sym, offset, 0,
 		  BFD_RELOC_VTABLE_ENTRY);
+}
+
+/* This is a version of obj_elf_get_vtable_entry() that is
+   suitable for use in struct _pseudo_type tables.  */
+
+void
+obj_elf_vtable_entry (int ignore ATTRIBUTE_UNUSED)
+{
+  (void) obj_elf_get_vtable_entry ();
 }
 
 void

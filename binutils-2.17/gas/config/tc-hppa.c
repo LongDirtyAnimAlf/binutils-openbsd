@@ -8710,7 +8710,7 @@ pa_vtable_inherit (ignore)
 {
   struct fix *new_fix;
 
-  new_fix = obj_elf_vtable_inherit (0);
+  new_fix = obj_elf_get_vtable_inherit (0);
 
   if (new_fix)
     {
