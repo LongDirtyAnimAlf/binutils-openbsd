@@ -1280,11 +1280,12 @@ warning_callback (struct bfd_link_info *info ATTRIBUTE_UNUSED,
       info.warning = warning;
       info.symbol = symbol;
       info.asymbols = asymbols;
+/*
       bfd_map_over_sections (abfd, warning_find_reloc, &info);
 
       if (! info.found)
-	einfo ("%B: %s%s\n", abfd, _("warning: "), warning);
-
+	      einfo ("%B: %s%s\n", abfd, _("warning: "), warning);
+*/
       if (entry == NULL)
 	free (asymbols);
     }
