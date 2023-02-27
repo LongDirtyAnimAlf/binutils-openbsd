@@ -35,6 +35,7 @@ prefix=$BASEDIR/cross/$target-$version           # installation directory
 
 INCLUDE_FIX=""
 INCLUDE_FIX+="-D_GNU_SOURCE "
+INCLUDE_FIX+="-Wno-unknown-warning-option "
 INCLUDE_FIX+="-Werror=cast-function-type "
 INCLUDE_FIX+="-Werror=incompatible-pointer-types "
 #INCLUDE_FIX+="-Wno-cast-function-type "

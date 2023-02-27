@@ -4,7 +4,7 @@ echo ""
 echo "*** Getting needed packages ***"
 echo ""
 
-pacman -S mc git texinfo bison flex --noconfirm
+pacman -S mc git texinfo bison flex dos2unix --noconfirm
 
 pacman -S mingw-w64-i686-binutils --noconfirm
 pacman -S mingw-w64-i686-gcc --noconfirm
