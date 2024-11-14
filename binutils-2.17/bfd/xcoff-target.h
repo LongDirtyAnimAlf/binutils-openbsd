@@ -43,7 +43,7 @@
 #define coff_mkobject                                  _bfd_xcoff_mkobject
 #define coff_bfd_copy_private_bfd_data                 _bfd_xcoff_copy_private_bfd_data
 #define coff_bfd_is_local_label_name                   _bfd_xcoff_is_local_label_name
-#define coff_bfd_is_target_special_symbol  ((bfd_boolean (*) (bfd *, asymbol *)) (void (*) (void)) bfd_false)
+#define coff_bfd_is_target_special_symbol  ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
 #define coff_bfd_reloc_type_lookup                     _bfd_xcoff_reloc_type_lookup
 #define coff_relocate_section                          _bfd_ppc_xcoff_relocate_section
 #define coff_core_file_failing_command                 _bfd_nocore_core_file_failing_command
@@ -104,7 +104,7 @@ extern int lynx_core_file_failing_signal (bfd *);
 
 #define _bfd_xcoff_slurp_extended_name_table bfd_false
 #define _bfd_xcoff_construct_extended_name_table \
-  ((bfd_boolean (*) (bfd *, char **, bfd_size_type *, const char **)) (void (*) (void)) bfd_false)
+  ((bfd_boolean (*) (bfd *, char **, bfd_size_type *, const char **)) bfd_false)
 #define _bfd_xcoff_truncate_arname bfd_dont_truncate_arname
 
 /* We can use the standard get_elt_at_index routine.  */

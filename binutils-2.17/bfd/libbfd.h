@@ -222,7 +222,7 @@ int bfd_generic_stat_arch_elt
 #define _bfd_generic_close_and_cleanup bfd_true
 #define _bfd_generic_bfd_free_cached_info bfd_true
 #define _bfd_generic_new_section_hook \
-  ((bfd_boolean (*) (bfd *, asection *)) (void (*) (void)) bfd_true)
+  ((bfd_boolean (*) (bfd *, asection *)) bfd_true)
 extern bfd_boolean _bfd_generic_get_section_contents
   (bfd *, asection *, void *, file_ptr, bfd_size_type);
 extern bfd_boolean _bfd_generic_get_section_contents_in_window
@@ -232,19 +232,19 @@ extern bfd_boolean _bfd_generic_get_section_contents_in_window
    BFD_JUMP_TABLE_COPY (_bfd_generic).  */
 
 #define _bfd_generic_bfd_copy_private_bfd_data \
-  ((bfd_boolean (*) (bfd *, bfd *)) (void (*) (void)) bfd_true)
+  ((bfd_boolean (*) (bfd *, bfd *)) bfd_true)
 #define _bfd_generic_bfd_merge_private_bfd_data \
-  ((bfd_boolean (*) (bfd *, bfd *)) (void (*) (void)) bfd_true)
+  ((bfd_boolean (*) (bfd *, bfd *)) bfd_true)
 #define _bfd_generic_bfd_set_private_flags \
-  ((bfd_boolean (*) (bfd *, flagword)) (void (*) (void)) bfd_true)
+  ((bfd_boolean (*) (bfd *, flagword)) bfd_true)
 #define _bfd_generic_bfd_copy_private_section_data \
-  ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) (void (*) (void)) bfd_true)
+  ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) bfd_true)
 #define _bfd_generic_bfd_copy_private_symbol_data \
-  ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) (void (*) (void)) bfd_true)
+  ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) bfd_true)
 #define _bfd_generic_bfd_copy_private_header_data \
-  ((bfd_boolean (*) (bfd *, bfd *)) (void (*) (void)) bfd_true)
+  ((bfd_boolean (*) (bfd *, bfd *)) bfd_true)
 #define _bfd_generic_bfd_print_private_bfd_data \
-  ((bfd_boolean (*) (bfd *, void *)) (void (*) (void)) bfd_true)
+  ((bfd_boolean (*) (bfd *, void *)) bfd_true)
 
 extern bfd_boolean _bfd_generic_init_private_section_data
   (bfd *, asection *, bfd *, asection *, struct bfd_link_info *);
@@ -266,17 +266,17 @@ extern bfd_boolean _bfd_nocore_core_file_matches_executable_p
 #define _bfd_noarchive_slurp_extended_name_table bfd_false
 #define _bfd_noarchive_construct_extended_name_table \
   ((bfd_boolean (*) (bfd *, char **, bfd_size_type *, const char **)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_noarchive_truncate_arname \
-  ((void (*) (bfd *, const char *, char *)) (void (*) (void)) bfd_void)
+  ((void (*) (bfd *, const char *, char *)) bfd_void)
 #define _bfd_noarchive_write_armap \
   ((bfd_boolean (*) (bfd *, unsigned int, struct orl *, unsigned int, int)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_noarchive_read_ar_hdr bfd_nullvoidptr
 #define _bfd_noarchive_openr_next_archived_file \
-  ((bfd *(*) (bfd *, bfd *)) (void (*) (void)) bfd_nullvoidptr)
+  ((bfd *(*) (bfd *, bfd *)) bfd_nullvoidptr)
 #define _bfd_noarchive_get_elt_at_index \
-  ((bfd *(*) (bfd *, symindex)) (void (*) (void)) bfd_nullvoidptr)
+  ((bfd *(*) (bfd *, symindex)) bfd_nullvoidptr)
 #define _bfd_noarchive_generic_stat_arch_elt bfd_generic_stat_arch_elt
 #define _bfd_noarchive_update_armap_timestamp bfd_false
 
@@ -322,52 +322,52 @@ extern bfd_boolean _bfd_archive_coff_construct_extended_name_table
 
 #define _bfd_nosymbols_get_symtab_upper_bound _bfd_n1
 #define _bfd_nosymbols_canonicalize_symtab \
-  ((long (*) (bfd *, asymbol **)) (void (*) (void)) _bfd_n1)
+  ((long (*) (bfd *, asymbol **)) _bfd_n1)
 #define _bfd_nosymbols_make_empty_symbol _bfd_generic_make_empty_symbol
 #define _bfd_nosymbols_print_symbol \
-  ((void (*) (bfd *, void *, asymbol *, bfd_print_symbol_type)) (void (*) (void)) bfd_void)
+  ((void (*) (bfd *, void *, asymbol *, bfd_print_symbol_type)) bfd_void)
 #define _bfd_nosymbols_get_symbol_info \
-  ((void (*) (bfd *, asymbol *, symbol_info *)) (void (*) (void)) bfd_void)
+  ((void (*) (bfd *, asymbol *, symbol_info *)) bfd_void)
 #define _bfd_nosymbols_bfd_is_local_label_name \
-  ((bfd_boolean (*) (bfd *, const char *)) (void (*) (void)) bfd_false)
+  ((bfd_boolean (*) (bfd *, const char *)) bfd_false)
 #define _bfd_nosymbols_bfd_is_target_special_symbol \
-  ((bfd_boolean (*) (bfd *, asymbol *)) (void (*) (void)) bfd_false)
+  ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
 #define _bfd_nosymbols_get_lineno \
-  ((alent *(*) (bfd *, asymbol *)) (void (*) (void)) bfd_nullvoidptr)
+  ((alent *(*) (bfd *, asymbol *)) bfd_nullvoidptr)
 #define _bfd_nosymbols_find_nearest_line \
   ((bfd_boolean (*) (bfd *, asection *, asymbol **, bfd_vma, const char **, \
 		     const char **, unsigned int *)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_nosymbols_find_inliner_info \
   ((bfd_boolean (*) (bfd *, const char **, const char **, unsigned int *)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_nosymbols_bfd_make_debug_symbol \
-  ((asymbol *(*) (bfd *, void *, unsigned long)) (void (*) (void)) bfd_nullvoidptr)
+  ((asymbol *(*) (bfd *, void *, unsigned long)) bfd_nullvoidptr)
 #define _bfd_nosymbols_read_minisymbols \
-  ((long (*) (bfd *, bfd_boolean, void **, unsigned int *)) (void (*) (void)) _bfd_n1)
+  ((long (*) (bfd *, bfd_boolean, void **, unsigned int *)) _bfd_n1)
 #define _bfd_nosymbols_minisymbol_to_symbol \
   ((asymbol *(*) (bfd *, bfd_boolean, const void *, asymbol *)) \
-   (void (*) (void)) bfd_nullvoidptr)
+   bfd_nullvoidptr)
 
 /* Routines to use for BFD_JUMP_TABLE_RELOCS when there is no reloc
    support.  Use BFD_JUMP_TABLE_RELOCS (_bfd_norelocs).  */
 
 #define _bfd_norelocs_get_reloc_upper_bound \
-  ((long (*) (bfd *, asection *)) (void (*) (void)) _bfd_n1)
+  ((long (*) (bfd *, asection *)) _bfd_n1)
 #define _bfd_norelocs_canonicalize_reloc \
-  ((long (*) (bfd *, asection *, arelent **, asymbol **)) (void (*) (void)) _bfd_n1)
+  ((long (*) (bfd *, asection *, arelent **, asymbol **)) _bfd_n1)
 #define _bfd_norelocs_bfd_reloc_type_lookup \
-  ((reloc_howto_type *(*) (bfd *, bfd_reloc_code_real_type)) (void (*) (void)) bfd_nullvoidptr)
+  ((reloc_howto_type *(*) (bfd *, bfd_reloc_code_real_type)) bfd_nullvoidptr)
 
 /* Routines to use for BFD_JUMP_TABLE_WRITE for targets which may not
    be written.  Use BFD_JUMP_TABLE_WRITE (_bfd_nowrite).  */
 
 #define _bfd_nowrite_set_arch_mach \
   ((bfd_boolean (*) (bfd *, enum bfd_architecture, unsigned long)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_nowrite_set_section_contents \
   ((bfd_boolean (*) (bfd *, asection *, const void *, file_ptr, bfd_size_type)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 
 /* Generic routines to use for BFD_JUMP_TABLE_WRITE.  Use
    BFD_JUMP_TABLE_WRITE (_bfd_generic).  */
@@ -383,37 +383,37 @@ extern bfd_boolean _bfd_generic_set_section_contents
 #define _bfd_nolink_bfd_get_relocated_section_contents \
   ((bfd_byte *(*) (bfd *, struct bfd_link_info *, struct bfd_link_order *, \
 		   bfd_byte *, bfd_boolean, asymbol **)) \
-   (void (*) (void)) bfd_nullvoidptr)
+   bfd_nullvoidptr)
 #define _bfd_nolink_bfd_relax_section \
   ((bfd_boolean (*) \
     (bfd *, asection *, struct bfd_link_info *, bfd_boolean *)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_nolink_bfd_gc_sections \
   ((bfd_boolean (*) (bfd *, struct bfd_link_info *)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_nolink_bfd_merge_sections \
   ((bfd_boolean (*) (bfd *, struct bfd_link_info *)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_nolink_bfd_is_group_section \
   ((bfd_boolean (*) (bfd *, const struct bfd_section *)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_nolink_bfd_discard_group \
   ((bfd_boolean (*) (bfd *, struct bfd_section *)) \
-   (void (*) (void)) bfd_false)
+   bfd_false)
 #define _bfd_nolink_bfd_link_hash_table_create \
-  ((struct bfd_link_hash_table *(*) (bfd *)) (void (*) (void)) bfd_nullvoidptr)
+  ((struct bfd_link_hash_table *(*) (bfd *)) bfd_nullvoidptr)
 #define _bfd_nolink_bfd_link_hash_table_free \
-  ((void (*) (struct bfd_link_hash_table *)) (void (*) (void)) bfd_void)
+  ((void (*) (struct bfd_link_hash_table *)) bfd_void)
 #define _bfd_nolink_bfd_link_add_symbols \
-  ((bfd_boolean (*) (bfd *, struct bfd_link_info *)) (void (*) (void)) bfd_false)
+  ((bfd_boolean (*) (bfd *, struct bfd_link_info *)) bfd_false)
 #define _bfd_nolink_bfd_link_just_syms \
-  ((void (*) (asection *, struct bfd_link_info *)) (void (*) (void)) bfd_void)
+  ((void (*) (asection *, struct bfd_link_info *)) bfd_void)
 #define _bfd_nolink_bfd_final_link \
-  ((bfd_boolean (*) (bfd *, struct bfd_link_info *)) (void (*) (void)) bfd_false)
+  ((bfd_boolean (*) (bfd *, struct bfd_link_info *)) bfd_false)
 #define _bfd_nolink_bfd_link_split_section \
-  ((bfd_boolean (*) (bfd *, struct bfd_section *)) (void (*) (void)) bfd_false)
+  ((bfd_boolean (*) (bfd *, struct bfd_section *)) bfd_false)
 #define _bfd_nolink_section_already_linked \
-  ((void (*) (bfd *, struct bfd_section *, struct bfd_link_info *)) (void (*) (void)) bfd_void)
+  ((void (*) (bfd *, struct bfd_section *, struct bfd_link_info *)) bfd_void)
 
 /* Routines to use for BFD_JUMP_TABLE_DYNAMIC for targets which do not
    have dynamic symbols or relocs.  Use BFD_JUMP_TABLE_DYNAMIC
@@ -421,12 +421,12 @@ extern bfd_boolean _bfd_generic_set_section_contents
 
 #define _bfd_nodynamic_get_dynamic_symtab_upper_bound _bfd_n1
 #define _bfd_nodynamic_canonicalize_dynamic_symtab \
-  ((long (*) (bfd *, asymbol **)) (void (*) (void)) _bfd_n1)
+  ((long (*) (bfd *, asymbol **)) _bfd_n1)
 #define _bfd_nodynamic_get_synthetic_symtab \
-  ((long (*) (bfd *, long, asymbol **, long, asymbol **, asymbol **)) (void (*) (void)) _bfd_n1)
+  ((long (*) (bfd *, long, asymbol **, long, asymbol **, asymbol **)) _bfd_n1)
 #define _bfd_nodynamic_get_dynamic_reloc_upper_bound _bfd_n1
 #define _bfd_nodynamic_canonicalize_dynamic_reloc \
-  ((long (*) (bfd *, arelent **, asymbol **)) (void (*) (void)) _bfd_n1)
+  ((long (*) (bfd *, arelent **, asymbol **)) _bfd_n1)
 
 /* Generic routine to determine of the given symbol is a local
    label.  */
@@ -1050,6 +1050,7 @@ static const char *const bfd_reloc_code_real_names[] = { "@@uninitialized@@",
   "BFD_RELOC_386_TLS_GOTDESC",
   "BFD_RELOC_386_TLS_DESC_CALL",
   "BFD_RELOC_386_TLS_DESC",
+  "BFD_RELOC_386_GOT32X",
   "BFD_RELOC_X86_64_GOT32",
   "BFD_RELOC_X86_64_PLT32",
   "BFD_RELOC_X86_64_COPY",

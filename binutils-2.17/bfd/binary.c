@@ -221,9 +221,9 @@ binary_get_symbol_info (bfd *ignore_abfd ATTRIBUTE_UNUSED,
 #define binary_read_minisymbols            _bfd_generic_read_minisymbols
 #define binary_minisymbol_to_symbol        _bfd_generic_minisymbol_to_symbol
 #define binary_bfd_reloc_type_lookup       _bfd_norelocs_bfd_reloc_type_lookup
-#define binary_get_reloc_upper_bound        ((long (*) (bfd *, asection *)) (void (*) (void)) bfd_0l)
-#define binary_canonicalize_reloc           ((long (*) (bfd *, asection *, arelent **, asymbol **)) (void (*) (void)) bfd_0l)
-#define binary_bfd_is_target_special_symbol ((bfd_boolean (*) (bfd *, asymbol *)) (void (*) (void)) bfd_false)
+#define binary_get_reloc_upper_bound        ((long (*) (bfd *, asection *)) bfd_0l)
+#define binary_canonicalize_reloc           ((long (*) (bfd *, asection *, arelent **, asymbol **)) bfd_0l)
+#define binary_bfd_is_target_special_symbol ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
 
 /* Set the architecture of a binary file.  */
 #define binary_set_arch_mach _bfd_generic_set_arch_mach

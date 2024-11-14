@@ -27,7 +27,7 @@
 #define bfd_sym_bfd_free_cached_info                _bfd_generic_bfd_free_cached_info
 #define bfd_sym_new_section_hook                    _bfd_generic_new_section_hook
 #define bfd_sym_bfd_is_local_label_name             bfd_generic_is_local_label_name
-#define bfd_sym_bfd_is_target_special_symbol       ((bfd_boolean (*) (bfd *, asymbol *)) (void (*) (void)) bfd_false)
+#define bfd_sym_bfd_is_target_special_symbol       ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
 #define bfd_sym_get_lineno                          _bfd_nosymbols_get_lineno
 #define bfd_sym_find_nearest_line                   _bfd_nosymbols_find_nearest_line
 #define bfd_sym_find_inliner_info                   _bfd_nosymbols_find_inliner_info

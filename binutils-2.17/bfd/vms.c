@@ -26,7 +26,7 @@
 
 #include "vms.h"
 
-#define vms_bfd_is_target_special_symbol ((bfd_boolean (*) (bfd *, asymbol *)) (void (*) (void)) bfd_false)
+#define vms_bfd_is_target_special_symbol ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
 #define vms_make_empty_symbol             _bfd_generic_make_empty_symbol
 #define vms_bfd_link_just_syms            _bfd_generic_link_just_syms
 #define vms_bfd_is_group_section          bfd_generic_is_group_section

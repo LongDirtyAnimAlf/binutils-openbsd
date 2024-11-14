@@ -4139,13 +4139,13 @@ const bfd_target rs6000coff_vec =
 
     /* Copy */
     _bfd_xcoff_copy_private_bfd_data,
-    ((bfd_boolean (*) (bfd *, bfd *)) (void (*) (void)) bfd_true),
+    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
     _bfd_generic_init_private_section_data,
-    ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) (void (*) (void)) bfd_true),
-    ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) (void (*) (void)) bfd_true),
-    ((bfd_boolean (*) (bfd *, bfd *)) (void (*) (void)) bfd_true),
-    ((bfd_boolean (*) (bfd *, flagword)) (void (*) (void)) bfd_true),
-    ((bfd_boolean (*) (bfd *, void * )) (void (*) (void)) bfd_true),
+    ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, flagword)) bfd_true),
+    ((bfd_boolean (*) (bfd *, void * )) bfd_true),
 
     /* Core */
     coff_core_file_failing_command,
@@ -4155,7 +4155,7 @@ const bfd_target rs6000coff_vec =
     /* Archive */
     _bfd_xcoff_slurp_armap,
     bfd_false,
-    ((bfd_boolean (*) (bfd *, char **, bfd_size_type *, const char **)) (void (*) (void)) bfd_false),
+    ((bfd_boolean (*) (bfd *, char **, bfd_size_type *, const char **)) bfd_false),
     bfd_dont_truncate_arname,
     _bfd_xcoff_write_armap,
     _bfd_xcoff_read_ar_hdr,
@@ -4389,13 +4389,13 @@ const bfd_target pmac_xcoff_vec =
 
     /* Copy */
     _bfd_xcoff_copy_private_bfd_data,
-    ((bfd_boolean (*) (bfd *, bfd *)) (void (*) (void)) bfd_true),
+    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
     _bfd_generic_init_private_section_data,
-    ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) (void (*) (void)) bfd_true),
-    ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) (void (*) (void)) bfd_true),
-    ((bfd_boolean (*) (bfd *, bfd *)) (void (*) (void)) bfd_true),
-    ((bfd_boolean (*) (bfd *, flagword)) (void (*) (void)) bfd_true),
-    ((bfd_boolean (*) (bfd *, void * )) (void (*) (void)) bfd_true),
+    ((bfd_boolean (*) (bfd *, asection *, bfd *, asection *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, asymbol *, bfd *, asymbol *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, bfd *)) bfd_true),
+    ((bfd_boolean (*) (bfd *, flagword)) bfd_true),
+    ((bfd_boolean (*) (bfd *, void * )) bfd_true),
 
     /* Core */
     coff_core_file_failing_command,
@@ -4405,7 +4405,7 @@ const bfd_target pmac_xcoff_vec =
     /* Archive */
     _bfd_xcoff_slurp_armap,
     bfd_false,
-    ((bfd_boolean (*) (bfd *, char **, bfd_size_type *, const char **)) (void (*) (void)) bfd_false),
+    ((bfd_boolean (*) (bfd *, char **, bfd_size_type *, const char **)) bfd_false),
     bfd_dont_truncate_arname,
     _bfd_xcoff_write_armap,
     _bfd_xcoff_read_ar_hdr,

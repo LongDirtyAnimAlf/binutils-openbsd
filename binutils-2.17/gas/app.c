@@ -343,7 +343,7 @@ do_scrub_chars (int (*get) (char *, int), char *tostart, int tolen)
   char *toend = tostart + tolen;
   char *from;
   char *fromend;
-  size_t fromlen;
+  int fromlen;
   register int ch, ch2 = 0;
   /* Character that started the string we're working on.  */
   static char quotechar;
