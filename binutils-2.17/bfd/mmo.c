@@ -3196,7 +3196,7 @@ mmo_canonicalize_reloc (bfd *abfd ATTRIBUTE_UNUSED,
    leading ':' might more appropriately be called local.  */
 #define mmo_bfd_is_local_label_name bfd_generic_is_local_label_name
 #define mmo_bfd_is_target_special_symbol  \
-  ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
+  ((bfd_boolean (*) (bfd *, asymbol *)) (void (*) (void)) bfd_false)
 
 /* Is this one really used or defined by anyone?  */
 #define mmo_get_lineno _bfd_nosymbols_get_lineno

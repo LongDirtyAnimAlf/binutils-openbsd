@@ -100,13 +100,15 @@ $SRCDIR/configure \
     --libexecdir=$prefix/bin/libexec \
     --includedir=$prefix/bin/include \
     --libdir=$prefix/bin/lib \
-    --host=i686-w64-mingw32 \
+    --enable-64-bit-bfd --enable-ld \
+    --host=$MSYSTEM_CHOST \
     --disable-nls --disable-shared --disable-debug --disable-threads \
     --disable-werror --disable-multilib \
-    --with-sysroot \
     2>&1 | tee binutils_configure.log
 
 #   --with-system-zlib
+#   --with-sysroot \
 
-make MAKEINFO=true all 2>&1 | tee binutils_make.log
+# make MAKEINFO=true -j 4 clean 2>&1 | tee binutils_make.log
+make MAKEINFO=true -j 4 all 2>&1 | tee binutils_make.log
 make MAKEINFO=true install 2>&1 | tee binutils_install.log

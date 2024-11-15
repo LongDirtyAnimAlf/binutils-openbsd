@@ -59,21 +59,6 @@
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
-/*  MEMORYSTATUSEX is missing from older windows headers, so define
-    a local replacement.  */
-typedef struct
-{
-  DWORD dwLength;
-  DWORD dwMemoryLoad;
-  DWORDLONG ullTotalPhys;
-  DWORDLONG ullAvailPhys;
-  DWORDLONG ullTotalPageFile;
-  DWORDLONG ullAvailPageFile;
-  DWORDLONG ullTotalVirtual;
-  DWORDLONG ullAvailVirtual;
-  DWORDLONG ullAvailExtendedVirtual;
-} lMEMORYSTATUSEX;
-typedef WINBOOL (WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 #endif
 
 #include "libiberty.h"
@@ -151,30 +136,11 @@ physmem_total (void)
 
 #if defined _WIN32
   { /* this works on windows */
-    PFN_MS_EX pfnex;
-    HMODULE h = GetModuleHandle ("kernel32.dll");
-
-    if (!h)
+    MEMORYSTATUSEX ms_ex;
+    ms_ex.dwLength = sizeof ms_ex;
+    if (!GlobalMemoryStatusEx (&ms_ex))
       return 0.0;
-
-    /*  Use GlobalMemoryStatusEx if available.  */
-    if ((pfnex = (PFN_MS_EX) GetProcAddress (h, "GlobalMemoryStatusEx")))
-      {
-	lMEMORYSTATUSEX lms_ex;
-	lms_ex.dwLength = sizeof lms_ex;
-	if (!pfnex (&lms_ex))
-	  return 0.0;
-	return (double) lms_ex.ullTotalPhys;
-      }
-
-    /*  Fall back to GlobalMemoryStatus which is always available.
-        but returns wrong results for physical memory > 4GB.  */
-    else
-      {
-	MEMORYSTATUS ms;
-	GlobalMemoryStatus (&ms);
-	return (double) ms.dwTotalPhys;
-      }
+    return (double) ms_ex.ullTotalPhys;
   }
 #endif
 
@@ -252,30 +218,11 @@ physmem_available (void)
 
 #if defined _WIN32
   { /* this works on windows */
-    PFN_MS_EX pfnex;
-    HMODULE h = GetModuleHandle ("kernel32.dll");
-
-    if (!h)
+    MEMORYSTATUSEX ms_ex;
+    ms_ex.dwLength = sizeof ms_ex;
+    if (!GlobalMemoryStatusEx (&ms_ex))
       return 0.0;
-
-    /*  Use GlobalMemoryStatusEx if available.  */
-    if ((pfnex = (PFN_MS_EX) GetProcAddress (h, "GlobalMemoryStatusEx")))
-      {
-	lMEMORYSTATUSEX lms_ex;
-	lms_ex.dwLength = sizeof lms_ex;
-	if (!pfnex (&lms_ex))
-	  return 0.0;
-	return (double) lms_ex.ullAvailPhys;
-      }
-
-    /*  Fall back to GlobalMemoryStatus which is always available.
-        but returns wrong results for physical memory > 4GB  */
-    else
-      {
-	MEMORYSTATUS ms;
-	GlobalMemoryStatus (&ms);
-	return (double) ms.dwAvailPhys;
-      }
+    return (double) ms_ex.ullAvailPhys;
   }
 #endif
 

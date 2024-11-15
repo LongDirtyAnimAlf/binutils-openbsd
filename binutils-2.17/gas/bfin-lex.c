@@ -141,8 +141,11 @@ extern FILE *yyin, *yyout;
  * (without autoconf's help, which isn't available because we want
  * flex-generated scanners to compile on their own).
  */
-typedef unsigned int yy_size_t;
 
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef unsigned int yy_size_t;
+#endif
 
 struct yy_buffer_state
 	{
@@ -213,8 +216,7 @@ static YY_BUFFER_STATE yy_current_buffer = 0;
 /* yy_hold_char holds the character lost when yytext is formed. */
 static char yy_hold_char;
 
-static int yy_n_chars;		/* number of characters read into yy_ch_buf */
-
+static yy_size_t yy_n_chars;		/* number of characters read into yy_ch_buf */
 
 int yyleng;
 

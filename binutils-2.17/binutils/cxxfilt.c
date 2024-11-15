@@ -135,12 +135,6 @@ standard_symbol_characters (void)
   return "_$.";
 }
 
-static const char *
-hp_symbol_characters (void)
-{
-  return "_$.<>#,*&[]:(){}";
-}
-
 extern int main (int, char **);
 
 int
@@ -215,18 +209,13 @@ main (int argc, char **argv)
 
   switch (current_demangling_style)
     {
-    case gnu_demangling:
-    case lucid_demangling:
-    case arm_demangling:
-    case java_demangling:
-    case edg_demangling:
-    case gnat_demangling:
-    case gnu_v3_demangling:
     case auto_demangling:
-      valid_symbols = standard_symbol_characters ();
-      break;
-    case hp_demangling:
-      valid_symbols = hp_symbol_characters ();
+    case gnu_v3_demangling:
+    case java_demangling:
+    case gnat_demangling:
+    case dlang_demangling:
+    case rust_demangling:
+       valid_symbols = standard_symbol_characters ();
       break;
     default:
       /* Folks should explicitly indicate the appropriate alphabet for

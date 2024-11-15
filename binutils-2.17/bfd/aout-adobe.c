@@ -450,8 +450,8 @@ aout_adobe_sizeof_headers (bfd *ignore_abfd ATTRIBUTE_UNUSED,
 
 /* Build the transfer vector for Adobe A.Out files.  */
 
-#define aout_32_bfd_make_debug_symbol ((asymbol *(*) (bfd *, void *, unsigned long)) bfd_nullvoidptr)
-#define aout_32_bfd_reloc_type_lookup ((reloc_howto_type *(*) (bfd *, bfd_reloc_code_real_type)) bfd_nullvoidptr)
+#define aout_32_bfd_make_debug_symbol ((asymbol *(*) (bfd *, void *, unsigned long)) (void (*) (void)) bfd_nullvoidptr)
+#define aout_32_bfd_reloc_type_lookup ((reloc_howto_type *(*) (bfd *, bfd_reloc_code_real_type)) (void (*) (void)) bfd_nullvoidptr)
 #define aout_32_close_and_cleanup                   aout_32_bfd_free_cached_info
 #define	aout_32_set_arch_mach		            aout_adobe_set_arch_mach
 #define	aout_32_set_section_contents	            aout_adobe_set_section_contents
