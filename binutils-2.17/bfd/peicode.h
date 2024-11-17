@@ -550,7 +550,7 @@ pe_ILF_make_a_symbol (pe_ILF_vars *  vars,
   /* Initialise the internal symbol structure.  */
   ent->u.syment.n_sclass          = sclass;
   ent->u.syment.n_scnum           = section->target_index;
-  ent->u.syment._n._n_n._n_offset = (long) sym;
+  ent->u.syment._n._n_n._n_offset = (intptr_t) sym;
 
   sym->symbol.the_bfd = vars->abfd;
   sym->symbol.name    = vars->string_ptr;

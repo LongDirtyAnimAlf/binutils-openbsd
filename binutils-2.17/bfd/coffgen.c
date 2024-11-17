@@ -726,7 +726,7 @@ coff_mangle_symbols (bfd *bfd_ptr)
 	      /* FIXME: We should use a union here.  */
 	      s->u.syment.n_value =
 		(bfd_vma)((combined_entry_type *)
-			  ((unsigned long) s->u.syment.n_value))->offset;
+			  ((intptr_t) s->u.syment.n_value))->offset;
 	      s->fix_value = 0;
 	    }
 	  if (s->fix_line)
@@ -1640,7 +1640,7 @@ coff_get_normalized_symtab (bfd *abfd)
 		}
 
 	      internal_ptr->u.syment._n._n_n._n_offset =
-		((long)
+		((intptr_t)
 		 (string_table
 		  + (internal_ptr + 1)->u.auxent.x_file.x_n.x_offset));
 	    }
@@ -1652,13 +1652,13 @@ coff_get_normalized_symtab (bfd *abfd)
 	      if (internal_ptr->u.syment.n_numaux > 1
 		  && coff_data (abfd)->pe)
 		internal_ptr->u.syment._n._n_n._n_offset =
-		  ((long)
+		  ((intptr_t)
 		   copy_name (abfd,
 			      (internal_ptr + 1)->u.auxent.x_file.x_fname,
 			      internal_ptr->u.syment.n_numaux * symesz));
 	      else
 		internal_ptr->u.syment._n._n_n._n_offset =
-		  ((long)
+		  ((intptr_t)
 		   copy_name (abfd,
 			      (internal_ptr + 1)->u.auxent.x_file.x_fname,
 			      (size_t) bfd_coff_filnmlen (abfd)));
@@ -1682,11 +1682,11 @@ coff_get_normalized_symtab (bfd *abfd)
 	      if (newstring == NULL)
 		return NULL;
 	      strncpy (newstring, internal_ptr->u.syment._n._n_name, i);
-	      internal_ptr->u.syment._n._n_n._n_offset = (long int) newstring;
+	      internal_ptr->u.syment._n._n_n._n_offset = (intptr_t) newstring;
 	      internal_ptr->u.syment._n._n_n._n_zeroes = 0;
 	    }
 	  else if (internal_ptr->u.syment._n._n_n._n_offset == 0)
-	    internal_ptr->u.syment._n._n_n._n_offset = (long int) "";
+	    internal_ptr->u.syment._n._n_n._n_offset = (intptr_t) "";
 	  else if (!bfd_coff_symname_in_debug (abfd, &internal_ptr->u.syment))
 	    {
 	      /* Long name already.  Point symbol at the string in the
@@ -1698,7 +1698,7 @@ coff_get_normalized_symtab (bfd *abfd)
 		    return NULL;
 		}
 	      internal_ptr->u.syment._n._n_n._n_offset =
-		((long int)
+		((intptr_t)
 		 (string_table
 		  + internal_ptr->u.syment._n._n_n._n_offset));
 	    }
@@ -1707,7 +1707,7 @@ coff_get_normalized_symtab (bfd *abfd)
 	      /* Long name in debug section.  Very similar.  */
 	      if (debug_section == NULL)
 		debug_section = build_debug_section (abfd);
-	      internal_ptr->u.syment._n._n_n._n_offset = (long int)
+	      internal_ptr->u.syment._n._n_n._n_offset = (intptr_t)
 		(debug_section + internal_ptr->u.syment._n._n_n._n_offset);
 	    }
 	}
@@ -1784,7 +1784,7 @@ coff_get_symbol_info (bfd *abfd, asymbol *symbol, symbol_info *ret)
   if (coffsymbol (symbol)->native != NULL
       && coffsymbol (symbol)->native->fix_value)
     ret->value = coffsymbol (symbol)->native->u.syment.n_value -
-      (unsigned long) obj_raw_syments (abfd);
+      (intptr_t) obj_raw_syments (abfd);
 }
 
 /* Return the COFF syment for a symbol.  */
@@ -1807,7 +1807,7 @@ bfd_coff_get_syment (bfd *abfd,
 
   if (csym->native->fix_value)
     psyment->n_value = psyment->n_value -
-      (unsigned long) obj_raw_syments (abfd);
+      (intptr_t) obj_raw_syments (abfd);
 
   /* FIXME: We should handle fix_line here.  */
 
@@ -1893,7 +1893,7 @@ coff_print_symbol (bfd *abfd,
 	  if (! combined->fix_value)
 	    val = (bfd_vma) combined->u.syment.n_value;
 	  else
-	    val = combined->u.syment.n_value - (unsigned long) root;
+	    val = combined->u.syment.n_value - (intptr_t) root;
 
 	  fprintf (file, "(sec %2d)(fl 0x%02x)(ty %3x)(scl %3d) (nx %d) 0x",
 		   combined->u.syment.n_scnum,

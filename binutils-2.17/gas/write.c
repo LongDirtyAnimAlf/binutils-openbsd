@@ -22,6 +22,8 @@
 
 /* This thing should be set up to do byteordering correctly.  But...  */
 
+#include <inttypes.h>
+
 #include "as.h"
 #include "subsegs.h"
 #include "obstack.h"
@@ -2372,7 +2374,7 @@ void
 print_fixup (fixS *fixp)
 {
   indent_level = 1;
-  fprintf (stderr, "fix %lx %s:%d", (long) fixp, fixp->fx_file, fixp->fx_line);
+  fprintf (stderr, "fix %" PRIxPTR " %s:%d", (intptr_t) fixp, fixp->fx_file, fixp->fx_line);
   if (fixp->fx_pcrel)
     fprintf (stderr, " pcrel");
   if (fixp->fx_pcrel_adjust)
@@ -2389,8 +2391,8 @@ print_fixup (fixS *fixp)
     fprintf (stderr, " tcbit");
   if (fixp->fx_done)
     fprintf (stderr, " done");
-  fprintf (stderr, "\n    size=%d frag=%lx where=%ld offset=%lx addnumber=%lx",
-	   fixp->fx_size, (long) fixp->fx_frag, (long) fixp->fx_where,
+  fprintf (stderr, "\n    size=%d frag=%" PRIxPTR " where=%ld offset=%lx addnumber=%lx",
+	   fixp->fx_size, (intptr_t) fixp->fx_frag, (long) fixp->fx_where,
 	   (long) fixp->fx_offset, (long) fixp->fx_addnumber);
   fprintf (stderr, "\n    %s (%d)", bfd_get_reloc_code_name (fixp->fx_r_type),
 	   fixp->fx_r_type);

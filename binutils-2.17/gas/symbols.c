@@ -22,6 +22,8 @@
 
 /* #define DEBUG_SYMS / * to debug symbol list maintenance.  */
 
+#include <inttypes.h>
+
 #include "as.h"
 
 #include "safe-ctype.h"
@@ -2609,14 +2611,14 @@ print_symbol_value_1 (FILE *file, symbolS *sym)
   const char *name = S_GET_NAME (sym);
   if (!name || !name[0])
     name = "(unnamed)";
-  fprintf (file, "sym %lx %s", (unsigned long) sym, name);
+  fprintf (file, "sym %" PRIxPTR " %s", (intptr_t) sym, name);
 
   if (LOCAL_SYMBOL_CHECK (sym))
     {
       struct local_symbol *locsym = (struct local_symbol *) sym;
       if (local_symbol_get_frag (locsym) != &zero_address_frag
 	  && local_symbol_get_frag (locsym) != NULL)
-	fprintf (file, " frag %lx", (long) local_symbol_get_frag (locsym));
+	fprintf (file, " frag %" PRIxPTR, (intptr_t) local_symbol_get_frag (locsym));
       if (local_symbol_resolved_p (locsym))
 	fprintf (file, " resolved");
       fprintf (file, " local");
@@ -2624,7 +2626,7 @@ print_symbol_value_1 (FILE *file, symbolS *sym)
   else
     {
       if (sym->sy_frag != &zero_address_frag)
-	fprintf (file, " frag %lx", (long) sym->sy_frag);
+	fprintf (file, " frag %" PRIxPTR, (intptr_t) sym->sy_frag);
       if (sym->written)
 	fprintf (file, " written");
       if (sym->sy_resolved)
@@ -2698,7 +2700,7 @@ print_binary (FILE *file, const char *name, expressionS *exp)
 void
 print_expr_1 (FILE *file, expressionS *exp)
 {
-  fprintf (file, "expr %lx ", (long) exp);
+  fprintf (file, "expr %" PRIxPTR, (intptr_t) exp);
   switch (exp->X_op)
     {
     case O_illegal:

@@ -435,8 +435,8 @@ struct internal_syment
     char _n_name[SYMNMLEN];	/* old COFF version		*/
     struct
     {
-      long _n_zeroes;		/* new == 0			*/
-      long _n_offset;		/* offset into string table	*/
+      intptr_t _n_zeroes;		/* new == 0			*/
+      intptr_t _n_offset;		/* offset into string table	*/
     }      _n_n;
     char *_n_nptr[2];		/* allows for overlaying	*/
   }     _n;
