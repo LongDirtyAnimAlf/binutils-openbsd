@@ -139,7 +139,7 @@ static reloc_howto_type elf_howto_table[]=
   EMPTY_HOWTO (42), /* R_386_IRELATIVE */
   HOWTO(R_386_GOT32X, 0, 2, 32, FALSE, 0, complain_overflow_bitfield,
 	bfd_elf_generic_reloc, "R_386_GOT32X",
-	TRUE, 0xffffffff, 0xffffffff, FALSE),	
+	TRUE, 0xffffffff, 0xffffffff, FALSE),
 
   /* Another gap.  */
   /* XXX R_386_GOT32X isn't really a TLS relocation */
@@ -321,7 +321,7 @@ elf_i386_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 
     case BFD_RELOC_386_GOT32X:
       TRACE ("BFD_RELOC_386_GOT32X");
-      return &elf_howto_table[R_386_GOT32X - R_386_tls_offset];	  
+      return &elf_howto_table[R_386_GOT32X - R_386_tls_offset];
 
     case BFD_RELOC_VTABLE_INHERIT:
       TRACE ("BFD_RELOC_VTABLE_INHERIT");
@@ -1002,7 +1002,7 @@ elf_i386_check_relocs (bfd *abfd,
 	  /* Fall through */
 
 	case R_386_GOT32:
-    case R_386_GOT32X:	
+	case R_386_GOT32X:
 	case R_386_TLS_GD:
 	case R_386_TLS_GOTDESC:
 	case R_386_TLS_DESC_CALL:
@@ -1014,7 +1014,7 @@ elf_i386_check_relocs (bfd *abfd,
 	      {
 	      default:
 	      case R_386_GOT32: tls_type = GOT_NORMAL; break;
-          case R_386_GOT32X: tls_type = GOT_NORMAL; break;		  
+	      case R_386_GOT32X: tls_type = GOT_NORMAL; break;
 	      case R_386_TLS_GD: tls_type = GOT_TLS_GD; break;
 	      case R_386_TLS_GOTDESC:
 	      case R_386_TLS_DESC_CALL:
@@ -1403,7 +1403,7 @@ elf_i386_gc_sweep_hook (bfd *abfd,
 	case R_386_TLS_IE:
 	case R_386_TLS_GOTIE:
 	case R_386_GOT32:
-    case R_386_GOT32X:	
+	case R_386_GOT32X:
 	  if (h != NULL)
 	    {
 	      if (h->got.refcount > 0)
